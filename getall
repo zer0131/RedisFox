@@ -1,6 +1,6 @@
 #!/bin/sh
 
-curr_dir=`pwd`
+curr_dir=$(cd `dirname $0`; pwd)
 old_gopath=$GOPATH
 export GOPATH=$curr_dir
 

@@ -5,7 +5,7 @@ if [ -z "$1" ];then
     exit
 fi
 
-CURDIR=`pwd`
+curr_dir=$(cd `dirname $0`; pwd)
 OLD_GOPATH=$GOPATH
 export GOPATH=$CURDIR
 
