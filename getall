@@ -9,4 +9,8 @@ if [ ! -d ${src_dir}"/github.com/astaxie/beego" ]; then
     go get "github.com/astaxie/beego"
 fi
 
+if [ ! -d ${src_dir}"/github.com/beego/bee" ]; then
+    go get "github.com/beego/bee"
+fi
+
 export GOPATH=$old_gopath

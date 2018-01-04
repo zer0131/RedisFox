@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ -z "$1" ];then
+    echo "input bee command"
+    exit
+fi
+
+#if [ -z "$2" ];then
+#    echo "input project name"
+#    exit
+#fi
+
+curr_dir=`pwd`
+old_gopath=$GOPATH
+export GOPATH=$curr_dir
+
+#src_dir="src"
+#cd $src_dir
+
+bee $1 $2
+
+#cd ..
+
+export GOPATH=$old_gopath
