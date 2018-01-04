@@ -13,4 +13,8 @@ if [ ! -d ${src_dir}"/github.com/beego/bee" ]; then
     go get "github.com/beego/bee"
 fi
 
+if [ ! -d ${src_dir}"/github.com/garyburd/redigo" ]l then
+    go get github.com/garyburd/redigo/redis
+if
+
 export GOPATH=$old_gopath
