@@ -13,8 +13,12 @@ if [ ! -d ${src_dir}"/github.com/beego/bee" ]; then
     go get "github.com/beego/bee"
 fi
 
-if [ ! -d ${src_dir}"/github.com/garyburd/redigo" ]l then
+if [ ! -d ${src_dir}"/github.com/garyburd/redigo" ]; then
     go get github.com/garyburd/redigo/redis
-if
+fi
+
+if [ ! -d ${src_dir}"/github.com/go-yaml/yaml" ]; then
+    go get github.com/go-yaml/yaml
+fi
 
 export GOPATH=$old_gopath

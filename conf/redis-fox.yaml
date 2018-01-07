@@ -1,0 +1,12 @@
+#!同级的字段缩进相同，且只能用空格缩进
+#!每个字段value值前相对“-”或者“：”必须有空格
+
+#[redis服务相关配置，用于fmonitor]
+
+#redis服务器
+servers:
+ - server: 127.0.0.1
+   port: 6379
+
+#执行monitor命令的时间(秒)
+duration: 10
