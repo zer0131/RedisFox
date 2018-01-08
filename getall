@@ -21,6 +21,7 @@ if [ ! -d ${src_dir}"/github.com/go-yaml/yaml" ]; then
     go get github.com/go-yaml/yaml
 fi
 
+#先安装golang.org/x/net/context包
 if [ ! -d ${src_dir}"/github.com/mattn/go-sqlite3" ]; then
     go get github.com/mattn/go-sqlite3
 fi
