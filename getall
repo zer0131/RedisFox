@@ -21,4 +21,8 @@ if [ ! -d ${src_dir}"/github.com/go-yaml/yaml" ]; then
     go get github.com/go-yaml/yaml
 fi
 
+if [ ! -d ${src_dir}"/github.com/mattn/go-sqlite3" ]; then
+    go get github.com/mattn/go-sqlite3
+fi
+
 export GOPATH=$old_gopath

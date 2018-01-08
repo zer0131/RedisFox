@@ -6,9 +6,9 @@ if [ -z "$1" ];then
 fi
 
 curr_dir=$(cd `dirname $0`; pwd)
-OLD_GOPATH=$GOPATH
-export GOPATH=$CURDIR
+old_gopath=$GOPATH
+export GOPATH=$curr_dir
 
 go install $1
 
-export GOPATH=$OLD_GOPATH
+export GOPATH=$old_gopath
