@@ -10,3 +10,6 @@ servers:
 
 #执行monitor命令的时间(秒)
 duration: 10
+
+#存储数据类型
+datatype: sqlite
