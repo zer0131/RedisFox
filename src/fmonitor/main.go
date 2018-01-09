@@ -5,6 +5,7 @@ import (
 	"os"
 	"fmt"
 	"flag"
+	"fmonitor/dataprovider"
 )
 
 var cpath string
@@ -41,10 +42,6 @@ func init()  {
 }*/
 
 func main()  {
-	fmt.Println(config.Duration)
-	for _,ser := range config.Servers {
-		fmt.Println(ser["server"])
-		fmt.Println(ser["port"])
-		fmt.Println(ser["password"])
-	}
+	pro := dataprovider.GetProvider(config)
+	fmt.Println(pro.SaveMemoryInfo())
 }

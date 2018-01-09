@@ -8,6 +8,7 @@ import (
 type Config struct {
 	Servers []map[string]string
 	Duration int
+	Datatype string
 }
 
 func New(path string) (*Config, error) {

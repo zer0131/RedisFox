@@ -2,10 +2,13 @@ package dataprovider
 
 import "fmonitor/conf"
 
-type Dataprovider interface {
-	SaveMemoryInfo()
+type DataProvider interface {
+	SaveMemoryInfo() string
 }
 
-func GetProvider(config *conf.Config) (*Dataprovider)  {
+func GetProvider(config *conf.Config) DataProvider  {
+	if config.Datatype == "sqlite" {
+		return new(SqliteProvide)
+	}
 	return nil
 }
