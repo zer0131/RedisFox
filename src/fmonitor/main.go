@@ -3,9 +3,8 @@ package main
 import (
 	"fmonitor/conf"
 	"os"
-	"fmt"
 	"flag"
-	"fmonitor/dataprovider"
+	"fmonitor/flog"
 )
 
 var cpath string
@@ -42,6 +41,6 @@ func init()  {
 }*/
 
 func main()  {
-	pro := dataprovider.GetProvider(config)
-	fmt.Println(pro.SaveMemoryInfo())
+	flog.Infof("test")
+	//fmt.Println(dataprovider.NewProvider(config).SaveMemoryInfo("127.0.0.1:6539",11015696, 11321968))
 }
