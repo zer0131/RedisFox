@@ -5,6 +5,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"fmonitor/util"
 	"time"
+	"fmonitor/flog"
+	"os"
 )
 
 var (
@@ -41,7 +43,8 @@ func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int
 
 func checkErr(err error) {
 	if err != nil {
-		panic(err)
+		flog.Fatalf(err.Error())
+		os.Exit(1)
 	}
 }
 

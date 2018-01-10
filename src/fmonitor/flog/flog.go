@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"strings"
 	"time"
 )
 
@@ -18,7 +16,6 @@ const (
 	DebugLevel
 )
 
-
 type LogFile struct {
 	level    int
 	logTime  int64
@@ -28,12 +25,12 @@ type LogFile struct {
 
 var logFile LogFile
 
-func init()  {
-	logFile.fileName = "redisfox"
+func init() {
+	logFile.fileName = "redisfox.log"
 	logFile.level = 4
 
 	log.SetOutput(logFile)
-	log.SetFlags(log.Lmicroseconds | log.Lshortfile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
 func SetLevel(level int) {
@@ -75,6 +72,13 @@ func Fatalf(format string, args ...interface{}) {
 	}
 }
 
+func Panicf(format string, args ...interface{}) {
+	if logFile.level >= PanicLevel {
+		log.SetPrefix("panic")
+		log.Output(2, fmt.Sprintf(format, args...))
+	}
+}
+
 func (this LogFile) Write(buf []byte) (n int, err error) {
 	if this.fileName == "" {
 		fmt.Printf("consol: %s", buf)
@@ -94,15 +98,14 @@ func (this LogFile) Write(buf []byte) (n int, err error) {
 }
 
 func (this *LogFile) createLogFile() {
-	logdir := "./log/"
-	if index := strings.LastIndex(this.fileName, "/"); index != -1 {
+	/*if index := strings.LastIndex(this.fileName, "/"); index != -1 {
 		logdir = this.fileName[0:index] + "/"
 		os.MkdirAll(this.fileName[0:index], os.ModePerm)
-	}
+	}*/
 
 	now := time.Now()
-	filename := fmt.Sprintf("%s_%04d%02d%02d_%02d%02d", this.fileName, now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute())
-	if err := os.Rename(this.fileName, filename); err == nil {
+	filename := "./log/" + fmt.Sprintf("%s.%04d%02d%02d%02d", this.fileName, now.Year(), now.Month(), now.Day(), now.Hour())
+	/*if err := os.Rename(this.fileName, filename); err == nil {
 		go func() {
 			tarCmd := exec.Command("tar", "-zcf", filename+".tar.gz", filename, "--remove-files")
 			tarCmd.Run()
@@ -110,10 +113,10 @@ func (this *LogFile) createLogFile() {
 			rmCmd := exec.Command("/bin/sh", "-c", "find "+logdir+` -type f -mtime +2 -exec rm {} \;`)
 			rmCmd.Run()
 		}()
-	}
+	}*/
 
 	for index := 0; index < 10; index++ {
-		if fd, err := os.OpenFile(this.fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModeExclusive); nil == err {
+		if fd, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm); nil == err {
 			this.fileFd.Sync()
 			this.fileFd.Close()
 			this.fileFd = fd
@@ -123,4 +126,3 @@ func (this *LogFile) createLogFile() {
 		this.fileFd = nil
 	}
 }
-
