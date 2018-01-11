@@ -115,7 +115,8 @@ func (this *LogFile) createLogFile() {
 		}()
 	}*/
 
-	for index := 0; index < 10; index++ {
+	//尝试三次创建
+	for index := 0; index < 3; index++ {
 		if fd, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm); nil == err {
 			this.fileFd.Sync()
 			this.fileFd.Close()
