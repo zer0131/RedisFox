@@ -7,6 +7,7 @@ import (
 type DataProvider interface {
 	SaveMemoryInfo(server string, used int, peak int) int64
 	SaveInfoCommand(server string, info map[string]string) int64
+	SaveMonitorCommand(server, command, argument, keyname string) int64
 }
 
 func NewProvider(config *conf.Config) DataProvider {
