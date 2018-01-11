@@ -41,6 +41,10 @@ func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int
 	return id
 }
 
+func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string) int64  {
+	return 666
+}
+
 func checkErr(err error) {
 	if err != nil {
 		flog.Fatalf(err.Error())
