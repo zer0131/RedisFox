@@ -5,8 +5,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"fmonitor/util"
 	"time"
-	"fmonitor/flog"
 	"os"
+	"encoding/json"
 )
 
 var (
@@ -22,7 +22,9 @@ func init() {
 	}
 	var err error
 	db, err = sql.Open("sqlite3", dbPath)
-	checkErr(err)
+	if util.CheckError(err) == false {
+		os.Exit(1)
+	}
 	if runSql {
 		createTable()
 	}
@@ -32,24 +34,41 @@ type SqliteProvide struct{}
 
 func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
 	stmt, err := db.Prepare("INSERT INTO memory(used,peak,server,datetime) VALUES(?,?,?,?)")
-	checkErr(err)
+	if util.CheckError(err) == false {
+		return 0
+	}
 	datetime := time.Now().Format("2006-01-02 15:04:05")
 	ret, err := stmt.Exec(used, peak, server, datetime)
-	checkErr(err)
+	if util.CheckError(err) == false {
+		return 0
+	}
 	id, err := ret.LastInsertId()
-	checkErr(err)
+	if util.CheckError(err) == false {
+		return 0
+	}
 	return id
 }
 
 func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string) int64  {
-	return 666
-}
-
-func checkErr(err error) {
-	if err != nil {
-		flog.Fatalf(err.Error())
-		os.Exit(1)
+	datetime := time.Now().Format("2006-01-02 15:04:05")
+	jsonByte, err := json.Marshal(info)
+	if util.CheckError(err) == false {
+		return 0
 	}
+	jsonStr := string(jsonByte)
+	stmt, err := db.Prepare("INSERT INTO info(server,info,datetime) VALUES(?,?,?)")
+	if util.CheckError(err) == false {
+		return 0
+	}
+	ret,err := stmt.Exec(server, jsonStr, datetime)
+	if util.CheckError(err) == false {
+		return 0
+	}
+	id ,err := ret.LastInsertId()
+	if util.CheckError(err) == false {
+		return 0
+	}
+	return id
 }
 
 func createTable() {
@@ -86,5 +105,7 @@ func createTable() {
 	CREATE INDEX server_index ON monitor(server ASC);
 	`
 	_, err := db.Exec(sqlData)
-	checkErr(err)
+	if util.CheckError(err) == false {
+		os.Exit(1)
+	}
 }

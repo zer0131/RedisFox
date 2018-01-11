@@ -1,6 +1,9 @@
 package util
 
-import "os"
+import (
+	"os"
+	"fmonitor/flog"
+)
 
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
@@ -11,4 +14,12 @@ func PathExists(path string) (bool, error) {
 		return false, nil
 	}
 	return false, err
+}
+
+func CheckError(err error) bool {
+	if err != nil {
+		flog.Fatalf(err.Error())
+		return false
+	}
+	return true
 }
