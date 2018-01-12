@@ -49,22 +49,21 @@ func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int
 	return id
 }
 
-func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string) int64  {
+func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string) int64 {
 	datetime := time.Now().Format("2006-01-02 15:04:05")
 	jsonByte, err := json.Marshal(info)
 	if util.CheckError(err) == false {
 		return 0
 	}
-	jsonStr := string(jsonByte)
 	stmt, err := db.Prepare("INSERT INTO info(server,info,datetime) VALUES(?,?,?)")
 	if util.CheckError(err) == false {
 		return 0
 	}
-	ret,err := stmt.Exec(server, jsonStr, datetime)
+	ret, err := stmt.Exec(server, string(jsonByte), datetime)
 	if util.CheckError(err) == false {
 		return 0
 	}
-	id ,err := ret.LastInsertId()
+	id, err := ret.LastInsertId()
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -77,7 +76,7 @@ func (this *SqliteProvide) SaveMonitorCommand(server, command, argument, keyname
 	if util.CheckError(err) == false {
 		return 0
 	}
-	ret, err := stmt.Exec(server,command,argument,keyname,datetime)
+	ret, err := stmt.Exec(server, command, argument, keyname, datetime)
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -87,6 +86,24 @@ func (this *SqliteProvide) SaveMonitorCommand(server, command, argument, keyname
 	}
 	return id
 }
+
+/*func (this *SqliteProvide) GetInfo(server string) (map[string]interface{}, error) {
+	var info string
+	err := db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", server).Scan(&info)
+	if util.CheckError(err) == false {
+		return nil, err
+	}
+	jsonMap := make(map[string]interface{})
+	jsonErr := json.Unmarshal([]byte(info), &jsonMap)
+	if util.CheckError(jsonErr) == false {
+		return nil, jsonErr
+	}
+	return jsonMap, nil
+}
+
+func (this *SqliteProvide) GetMemoryInfo(server, fromDate, toDate string) ([]map[string]interface{}, error) {
+	return nil, nil
+}*/
 
 func createTable() {
 	sqlData := `

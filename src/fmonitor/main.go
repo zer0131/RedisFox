@@ -4,10 +4,7 @@ import (
 	"fmonitor/conf"
 	"os"
 	"flag"
-	"github.com/garyburd/redigo/redis"
-	"fmt"
-	"strings"
-	"encoding/json"
+	"fmonitor/flog"
 )
 
 var cpath string
@@ -18,10 +15,12 @@ func init() {
 	flag.StringVar(&cpath, "config", "./conf/redis-fox.yaml", "config path with yml format")
 	flag.Parse()
 	if cpath == "" {
+		flog.Fatalf("config path not found")
 		os.Exit(1)
 	}
 	c, err := conf.New(cpath)
 	if err != nil {
+		flog.Fatalf(err.Error())
 		os.Exit(1)
 	}
 	config = c
@@ -44,7 +43,7 @@ func init() {
 }*/
 
 func main() {
-	redisConn, _ := redis.Dial("tcp", "127.0.0.1:6379")
+	/*redisConn, _ := redis.Dial("tcp", "127.0.0.1:6379")
 	ret, err:= redis.String(redisConn.Do("info"))
 	if err != nil {
 		fmt.Println(err.Error())
@@ -58,8 +57,6 @@ func main() {
 			retMap[kvArr[0]] = kvArr[1]
 		}
 	}
-	retByte, _ := json.Marshal(retMap)
-	fmt.Println(string(retByte))
 	redisConn.Close()
-	//fmt.Println(dataprovider.NewProvider(config).SaveMemoryInfo("127.0.0.1:6539", 11015696, 11321968))
+	fmt.Println(dataprovider.NewProvider(config).SaveInfoCommand("127.0.0.1:6379",retMap))*/
 }
