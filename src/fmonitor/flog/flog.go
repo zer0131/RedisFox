@@ -16,85 +16,85 @@ const (
 	DebugLevel
 )
 
-var logFile *LogFile
+var LogObj *LogFile
 
 type LogFile struct {
 	level    int
 	logTime  int64
+	filePath     string
 	fileName string
 	fileFd   *os.File
 }
 
-func init() {
-	logFile.fileName = "redisfox.log"
-	logFile.level = 4
+func Init(fname, path string, currLevel int) {
+	LogObj = &LogFile{
+		level:currLevel,
+		filePath:path,
+		fileName:fname,
+	}
 
-	log.SetOutput(logFile)
+	log.SetOutput(LogObj)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
-func SetLevel(level int) {
-	logFile.level = level
-}
-
 func Debugf(format string, args ...interface{}) {
-	if logFile.level >= DebugLevel {
+	if LogObj.level >= DebugLevel {
 		log.SetPrefix("debug ")
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Infof(format string, args ...interface{}) {
-	if logFile.level >= InfoLevel {
+	if LogObj.level >= InfoLevel {
 		log.SetPrefix("info ")
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Warnf(format string, args ...interface{}) {
-	if logFile.level >= WarnLevel {
+	if LogObj.level >= WarnLevel {
 		log.SetPrefix("warn ")
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Errorf(format string, args ...interface{}) {
-	if logFile.level >= ErrorLevel {
+	if LogObj.level >= ErrorLevel {
 		log.SetPrefix("error ")
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Fatalf(format string, args ...interface{}) {
-	if logFile.level >= FatalLevel {
+	if LogObj.level >= FatalLevel {
 		log.SetPrefix("fatal ")
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
 func Panicf(format string, args ...interface{}) {
-	if logFile.level >= PanicLevel {
+	if LogObj.level >= PanicLevel {
 		log.SetPrefix("panic")
 		log.Output(2, fmt.Sprintf(format, args...))
 	}
 }
 
-func (this LogFile) Write(buf []byte) (n int, err error) {
+func (this *LogFile) Write(buf []byte) (n int, err error) {
 	if this.fileName == "" {
 		fmt.Printf("consol: %s", buf)
 		return len(buf), nil
 	}
 
-	if logFile.logTime+3600 < time.Now().Unix() {
-		logFile.createLogFile()
-		logFile.logTime = time.Now().Unix()
+	if LogObj.logTime+3600 < time.Now().Unix() {
+		LogObj.createLogFile()
+		LogObj.logTime = time.Now().Unix()
 	}
 
-	if logFile.fileFd == nil {
+	if LogObj.fileFd == nil {
 		return len(buf), nil
 	}
 
-	return logFile.fileFd.Write(buf)
+	return LogObj.fileFd.Write(buf)
 }
 
 func (this *LogFile) createLogFile() {
@@ -104,7 +104,7 @@ func (this *LogFile) createLogFile() {
 	}*/
 
 	now := time.Now()
-	filename := "./log/" + fmt.Sprintf("%s.%04d%02d%02d%02d", this.fileName, now.Year(), now.Month(), now.Day(), now.Hour())
+	filename := this.filePath + fmt.Sprintf("%s.%04d%02d%02d%02d", this.fileName, now.Year(), now.Month(), now.Day(), now.Hour())
 	/*if err := os.Rename(this.fileName, filename); err == nil {
 		go func() {
 			tarCmd := exec.Command("tar", "-zcf", filename+".tar.gz", filename, "--remove-files")

@@ -13,3 +13,8 @@ duration: 10
 
 #存储数据类型
 datatype: sqlite
+
+#日志相关
+logpath: ./log/
+logname: redisfox.log
+loglevel: 4

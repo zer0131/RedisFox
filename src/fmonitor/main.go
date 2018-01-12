@@ -24,6 +24,7 @@ func init() {
 		os.Exit(1)
 	}
 	config = c
+	flog.Init(config.Logname, config.Logpath, config.Loglevel)
 	//StorePid("")
 }
 

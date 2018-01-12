@@ -6,9 +6,12 @@ import (
 )
 
 type Config struct {
-	Servers []map[string]string
+	Servers  []map[string]string
 	Duration int
 	Datatype string
+	Logpath  string
+	Logname  string
+	Loglevel int
 }
 
 func New(path string) (*Config, error) {
