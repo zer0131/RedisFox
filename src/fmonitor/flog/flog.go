@@ -16,14 +16,14 @@ const (
 	DebugLevel
 )
 
+var logFile *LogFile
+
 type LogFile struct {
 	level    int
 	logTime  int64
 	fileName string
 	fileFd   *os.File
 }
-
-var logFile LogFile
 
 func init() {
 	logFile.fileName = "redisfox.log"
