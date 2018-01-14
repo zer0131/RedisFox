@@ -14,7 +14,7 @@ type DataProvider interface {
 
 func NewProvider(config *conf.Config) DataProvider {
 	if config.Datatype == "sqlite" {
-		return new(SqliteProvide)
+		return NewSqliteProvide(config.Datapath)
 	}
 	return nil
 }

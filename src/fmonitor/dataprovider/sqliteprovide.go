@@ -14,8 +14,9 @@ var (
 	db     *sql.DB
 )
 
-func init() {
-	dbPath = "./data/redisfox.db"
+type SqliteProvide struct{}
+
+func NewSqliteProvide(dbPath string) *SqliteProvide  {
 	runSql := true
 	if isExists, _ := util.PathExists(dbPath); isExists {
 		runSql = false
@@ -28,9 +29,8 @@ func init() {
 	if runSql {
 		createTable()
 	}
+	return &SqliteProvide{}
 }
-
-type SqliteProvide struct{}
 
 func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
 	stmt, err := db.Prepare("INSERT INTO memory(used,peak,server,datetime) VALUES(?,?,?,?)")

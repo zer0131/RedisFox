@@ -13,6 +13,7 @@ duration: 10
 
 #存储数据类型
 datatype: sqlite
+datapath: ./data/redisfox.db
 
 #日志相关
 logpath: ./log/

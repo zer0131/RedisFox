@@ -9,6 +9,7 @@ type Config struct {
 	Servers  []map[string]string
 	Duration int
 	Datatype string
+	Datapath string
 	Logpath  string
 	Logname  string
 	Loglevel int
