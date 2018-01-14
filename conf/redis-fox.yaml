@@ -7,6 +7,7 @@
 servers:
  - server: 127.0.0.1
    port: 6379
+   conntype: tcp
 
 #执行monitor命令的时间(秒)
 duration: 10

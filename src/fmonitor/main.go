@@ -5,6 +5,10 @@ import (
 	"os"
 	"flag"
 	"fmonitor/flog"
+	"fmt"
+	"strconv"
+	"os/signal"
+	"syscall"
 )
 
 var cpath string
@@ -18,7 +22,7 @@ func init() {
 		flog.Fatalf("config path not found")
 		os.Exit(1)
 	}
-	c, err := conf.New(cpath)
+	c, err := conf.NewConfig(cpath)
 	if err != nil {
 		flog.Fatalf(err.Error())
 		os.Exit(1)
@@ -60,4 +64,29 @@ func main() {
 	}
 	redisConn.Close()
 	fmt.Println(dataprovider.NewProvider(config).SaveInfoCommand("127.0.0.1:6379",retMap))*/
+	for _,v := range config.Servers {
+		server := v["server"]
+		port, err := strconv.Atoi(v["port"])
+		conntype := v["conntype"]
+		if err != nil {
+			flog.Fatalf(err.Error())
+			os.Exit(1)
+		}
+		var passport string
+		if v["passport"] != "" {
+			passport = v["passport"]
+		}
+		go infoProcess(server, conntype, passport, port)
+	}
+	exitChan := make(chan os.Signal)
+	signal.Notify(exitChan, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
+	<-exitChan
+	flog.Infof("fmonitor shut down")
+}
+
+func infoProcess(server ,conntype, passport string, port int)  {
+	fmt.Println(server)
+	fmt.Println(port)
+	fmt.Println(conntype)
+	fmt.Println(passport)
 }

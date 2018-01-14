@@ -15,7 +15,7 @@ type Config struct {
 	Loglevel int
 }
 
-func New(path string) (*Config, error) {
+func NewConfig(path string) (*Config, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
