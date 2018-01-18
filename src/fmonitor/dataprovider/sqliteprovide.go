@@ -5,7 +5,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"fmonitor/util"
 	"time"
-	"os"
 	"encoding/json"
 )
 
@@ -16,7 +15,7 @@ var (
 
 type SqliteProvide struct{}
 
-func NewSqliteProvide(dbPath string) *SqliteProvide  {
+func NewSqliteProvide(dbPath string) (*SqliteProvide,error)  {
 	runSql := true
 	if isExists, _ := util.PathExists(dbPath); isExists {
 		runSql = false
@@ -24,12 +23,14 @@ func NewSqliteProvide(dbPath string) *SqliteProvide  {
 	var err error
 	db, err = sql.Open("sqlite3", dbPath)
 	if util.CheckError(err) == false {
-		os.Exit(1)
+		return nil,err
 	}
 	if runSql {
-		createTable()
+		if cerr := createTable();cerr != nil {
+			return nil,cerr
+		}
 	}
-	return &SqliteProvide{}
+	return &SqliteProvide{},nil
 }
 
 func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
@@ -105,7 +106,7 @@ func (this *SqliteProvide) GetMemoryInfo(server, fromDate, toDate string) ([]map
 	return nil, nil
 }*/
 
-func createTable() {
+func createTable() error {
 	sqlData := `
 	CREATE TABLE IF NOT EXISTS info(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -140,6 +141,7 @@ func createTable() {
 	`
 	_, err := db.Exec(sqlData)
 	if util.CheckError(err) == false {
-		os.Exit(1)
+		return err
 	}
+	return nil
 }

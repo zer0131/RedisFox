@@ -50,22 +50,7 @@ func init() {
 }*/
 
 func main() {
-	/*redisConn, _ := redis.Dial("tcp", "127.0.0.1:6379")
-	ret, err:= redis.String(redisConn.Do("info"))
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-	retArr := strings.Split(strings.TrimRight(ret, "\r\n"), "\r\n")
-	retMap := make(map[string]string)
-	for _,v := range retArr {
-		if index := strings.Index(v, "#"); index == -1 && v != "" {
-			kvArr := strings.Split(v, ":")
-			retMap[kvArr[0]] = kvArr[1]
-		}
-	}
-	redisConn.Close()
-	fmt.Println(dataprovider.NewProvider(config).SaveInfoCommand("127.0.0.1:6379",retMap))*/
+	/*fmt.Println(dataprovider.NewProvider(config).SaveInfoCommand("127.0.0.1:6379",retMap))*/
 	wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
 	probe := util.NewProbe(wg,closeCh)
@@ -85,7 +70,16 @@ func main() {
 		if v["passport"] != "" {
 			passport = v["passport"]
 		}
-		process.RunInfo(server,conntype,passport,port,config,probe)
+
+		//开启info
+		info,infoErr := process.RunInfo(server,conntype,passport,port,config,probe)
+		if infoErr != nil {
+			flog.Warnf(info.ServerId+" run info error "+infoErr.Error())
+		}
+
+		//开启monitor
+		//code...
+
 		wg.Add(1)
 	}
 	exitChan := make(chan os.Signal)

@@ -12,9 +12,10 @@ type DataProvider interface {
 	GetMemoryInfo(server, fromDate, toDate string) ([]map[string]interface{}, error)*/
 }
 
-func NewProvider(config *conf.Config) DataProvider {
+func NewProvider(config *conf.Config) (DataProvider,error) {
 	if config.Datatype == "sqlite" {
 		return NewSqliteProvide(config.Datapath)
+	} else {
+		return NewSqliteProvide(config.Datapath)//默认返回
 	}
-	return nil
 }
