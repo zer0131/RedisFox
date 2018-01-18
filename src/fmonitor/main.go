@@ -5,10 +5,12 @@ import (
 	"os"
 	"flag"
 	"fmonitor/flog"
-	"fmt"
 	"strconv"
 	"os/signal"
 	"syscall"
+	"sync"
+	"fmonitor/util"
+	"fmonitor/process"
 )
 
 var cpath string
@@ -64,6 +66,13 @@ func main() {
 	}
 	redisConn.Close()
 	fmt.Println(dataprovider.NewProvider(config).SaveInfoCommand("127.0.0.1:6379",retMap))*/
+	wg := new(sync.WaitGroup)
+	closeCh := make(chan struct{})
+	probe := util.NewProbe(wg,closeCh)
+	defer func() {
+		close(closeCh)
+		wg.Wait()
+	}()
 	for _,v := range config.Servers {
 		server := v["server"]
 		port, err := strconv.Atoi(v["port"])
@@ -76,17 +85,12 @@ func main() {
 		if v["passport"] != "" {
 			passport = v["passport"]
 		}
-		go infoProcess(server, conntype, passport, port)
+		process.RunInfo(server,conntype,passport,port,config,probe)
+		wg.Add(1)
 	}
 	exitChan := make(chan os.Signal)
-	signal.Notify(exitChan, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
+	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
 	<-exitChan
 	flog.Infof("fmonitor shut down")
 }
 
-func infoProcess(server ,conntype, passport string, port int)  {
-	fmt.Println(server)
-	fmt.Println(port)
-	fmt.Println(conntype)
-	fmt.Println(passport)
-}
