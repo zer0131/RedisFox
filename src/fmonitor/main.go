@@ -50,7 +50,6 @@ func init() {
 }*/
 
 func main() {
-	/*fmt.Println(dataprovider.NewProvider(config).SaveInfoCommand("127.0.0.1:6379",retMap))*/
 	wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
 	probe := util.NewProbe(wg,closeCh)
@@ -59,6 +58,7 @@ func main() {
 		wg.Wait()
 	}()
 	for _,v := range config.Servers {
+		processNum := 2
 		server := v["server"]
 		port, err := strconv.Atoi(v["port"])
 		conntype := v["conntype"]
@@ -71,16 +71,21 @@ func main() {
 			passport = v["passport"]
 		}
 
-		//开启info
-		info,infoErr := process.RunInfo(server,conntype,passport,port,config,probe)
+		//开启redis info存储
+		_,infoErr := process.RunInfo(server,conntype,passport,port,config,probe)
 		if infoErr != nil {
-			flog.Warnf(info.ServerId+" run info error "+infoErr.Error())
+			processNum--
 		}
 
-		//开启monitor
-		//code...
+		//开启redis monitor
+		_,monitorErr := process.RunNonitor()
+		if monitorErr != nil {
+			processNum--
+		}
 
-		wg.Add(1)
+		if processNum > 0 {
+			wg.Add(processNum)
+		}
 	}
 	exitChan := make(chan os.Signal)
 	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)

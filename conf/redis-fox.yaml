@@ -9,8 +9,8 @@ servers:
    port: 6379
    conntype: tcp
 
-#执行循环sleep时间(秒)
-duration: 2
+#获取redis信息间隔时间(秒)
+duration: 60
 
 #存储数据类型
 datatype: sqlite

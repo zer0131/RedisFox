@@ -8,33 +8,34 @@ import (
 	"encoding/json"
 )
 
-var (
+
+type SqliteProvide struct{
 	dbPath string
-	db     *sql.DB
-)
+	db *sql.DB
+}
 
-type SqliteProvide struct{}
-
-func NewSqliteProvide(dbPath string) (*SqliteProvide,error)  {
+func NewSqliteProvide(dbPath string) (*SqliteProvide, error) {
 	runSql := true
 	if isExists, _ := util.PathExists(dbPath); isExists {
 		runSql = false
 	}
-	var err error
-	db, err = sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("sqlite3", dbPath)
 	if util.CheckError(err) == false {
 		return nil,err
 	}
+	sqliteProvide := new(SqliteProvide)
+	sqliteProvide.dbPath = dbPath
+	sqliteProvide.db = db
 	if runSql {
-		if cerr := createTable();cerr != nil {
+		if cerr := sqliteProvide.createTable();cerr != nil {
 			return nil,cerr
 		}
 	}
-	return &SqliteProvide{},nil
+	return sqliteProvide,nil
 }
 
 func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
-	stmt, err := db.Prepare("INSERT INTO memory(used,peak,server,datetime) VALUES(?,?,?,?)")
+	stmt, err := this.db.Prepare("INSERT INTO memory(used,peak,server,datetime) VALUES(?,?,?,?)")
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -56,7 +57,7 @@ func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string
 	if util.CheckError(err) == false {
 		return 0
 	}
-	stmt, err := db.Prepare("INSERT INTO info(server,info,datetime) VALUES(?,?,?)")
+	stmt, err := this.db.Prepare("INSERT INTO info(server,info,datetime) VALUES(?,?,?)")
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -73,7 +74,7 @@ func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string
 
 func (this *SqliteProvide) SaveMonitorCommand(server, command, argument, keyname string) int64 {
 	datetime := time.Now().Format("2006-01-02 15:04:05")
-	stmt, err := db.Prepare("INSERT INTO monitor(server,command,arguments,keyname,datetime) VALUES(?,?,?,?,?)")
+	stmt, err := this.db.Prepare("INSERT INTO monitor(server,command,arguments,keyname,datetime) VALUES(?,?,?,?,?)")
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -88,9 +89,13 @@ func (this *SqliteProvide) SaveMonitorCommand(server, command, argument, keyname
 	return id
 }
 
+func (this *SqliteProvide) Close() error {
+	return this.db.Close()
+}
+
 /*func (this *SqliteProvide) GetInfo(server string) (map[string]interface{}, error) {
 	var info string
-	err := db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", server).Scan(&info)
+	err := this.db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", server).Scan(&info)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -106,7 +111,7 @@ func (this *SqliteProvide) GetMemoryInfo(server, fromDate, toDate string) ([]map
 	return nil, nil
 }*/
 
-func createTable() error {
+func (this *SqliteProvide) createTable() error {
 	sqlData := `
 	CREATE TABLE IF NOT EXISTS info(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -139,7 +144,7 @@ func createTable() error {
 	CREATE INDEX monitor_datedime_index ON monitor (datetime DESC);
 	CREATE INDEX server_index ON monitor(server ASC);
 	`
-	_, err := db.Exec(sqlData)
+	_, err := this.db.Exec(sqlData)
 	if util.CheckError(err) == false {
 		return err
 	}

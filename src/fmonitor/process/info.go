@@ -4,11 +4,11 @@ import (
 	"fmonitor/util"
 	"fmonitor/flog"
 	"strconv"
-	"fmt"
 	"fmonitor/conf"
 	"time"
 	"github.com/garyburd/redigo/redis"
 	"strings"
+	"fmonitor/dataprovider"
 )
 
 type Info struct {
@@ -17,9 +17,10 @@ type Info struct {
 	conntype string
 	passport string
 	port int
-	probe *util.Probe
 	sleepTime int
+	probe *util.Probe
 	redisConn redis.Conn
+	sqlDb dataprovider.DataProvider
 }
 
 func RunInfo(server,conntype,passport string, port int, config *conf.Config, probe *util.Probe) (*Info, error) {
@@ -33,15 +34,22 @@ func RunInfo(server,conntype,passport string, port int, config *conf.Config, pro
 	info.sleepTime = config.Duration
 	info.ServerId = server+":"+strconv.Itoa(port)
 
-	redisOp := redis.DialPassword(info.passport)
-	rc,err := redis.Dial(info.conntype, info.ServerId, redisOp)
-	if err != nil {
+	rc,err := redis.Dial(info.conntype, info.ServerId, redis.DialPassword(info.passport))
+	if util.CheckError(err) == false {
 		return nil, err
 	}
-	info.redisConn = rc
 
-	flog.Infof(info.ServerId+" start")
+	sd, err := dataprovider.NewProvider(config)
+	if util.CheckError(err) == false {
+		rc.Close()
+		return nil, err
+	}
+
+	info.redisConn = rc
+	info.sqlDb = sd
+
 	go info.loop()
+	flog.Infof(info.ServerId+" start")
 
 	return info, nil
 
@@ -55,21 +63,19 @@ LOOP:
 			flog.Infof(this.ServerId+" stop")
 			break LOOP
 		default:
-			fmt.Println(this.server)
-			fmt.Println(this.port)
-			fmt.Println(this.conntype)
-			fmt.Println(this.passport)
+			this.saveRedisInfo()
 		}
 		time.Sleep(time.Second * time.Duration(this.sleepTime))
 	}
+	this.sqlDb.Close()
 	this.redisConn.Close()
 	this.probe.Done()
 }
 
-func (this *Info) saveRedisInfo()  {
+func (this *Info) saveRedisInfo() error {
 	ret, err:= redis.String(this.redisConn.Do("info"))
-	if err != nil {
-		//
+	if util.CheckError(err) == false {
+		return err
 	}
 	retArr := strings.Split(strings.TrimRight(ret, "\r\n"), "\r\n")
 	retMap := make(map[string]string)
@@ -79,4 +85,9 @@ func (this *Info) saveRedisInfo()  {
 			retMap[kvArr[0]] = kvArr[1]
 		}
 	}
+	usedMemory,_ := strconv.Atoi(retMap["used_memory"])
+	usedMemoryPeak,_ := strconv.Atoi(retMap["used_memory_peak"])
+	this.sqlDb.SaveMemoryInfo(this.ServerId,usedMemory,usedMemoryPeak)
+	this.sqlDb.SaveInfoCommand(this.ServerId, retMap)
+	return nil
 }
