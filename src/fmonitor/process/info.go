@@ -15,26 +15,26 @@ type Info struct {
 	ServerId string
 	server string
 	conntype string
-	passport string
+	password string
 	port int
-	sleepTime int
+	sleepTime time.Duration
 	probe *util.Probe
 	redisConn redis.Conn
 	sqlDb dataprovider.DataProvider
 }
 
-func RunInfo(server,conntype,passport string, port int, config *conf.Config, probe *util.Probe) (*Info, error) {
+func RunInfo(server,conntype,password string, port int, config *conf.Config, probe *util.Probe) (*Info, error) {
 
 	info := new(Info)
 	info.server = server
 	info.conntype = conntype
-	info.passport = passport
+	info.password = password
 	info.port = port
 	info.probe = probe
-	info.sleepTime = config.Duration
+	info.sleepTime = time.Duration(config.Sleeptime)
 	info.ServerId = server+":"+strconv.Itoa(port)
 
-	rc,err := redis.Dial(info.conntype, info.ServerId, redis.DialPassword(info.passport))
+	rc,err := redis.Dial(info.conntype, info.ServerId, redis.DialPassword(info.password))
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func RunInfo(server,conntype,passport string, port int, config *conf.Config, pro
 	info.sqlDb = sd
 
 	go info.loop()
-	flog.Infof(info.ServerId+" start")
+	flog.Infof(info.ServerId+" info start")
 
 	return info, nil
 
@@ -60,12 +60,12 @@ LOOP:
 	for {
 		select {
 		case <- this.probe.Chan():
-			flog.Infof(this.ServerId+" stop")
+			flog.Infof(this.ServerId+" info stop")
 			break LOOP
 		default:
 			this.saveRedisInfo()
 		}
-		time.Sleep(time.Second * time.Duration(this.sleepTime))
+		time.Sleep(time.Second * this.sleepTime)
 	}
 	this.sqlDb.Close()
 	this.redisConn.Close()
