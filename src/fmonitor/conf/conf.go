@@ -7,7 +7,10 @@ import (
 
 type Config struct {
 	Servers  []map[string]string
-	Duration int
+	Sleeptime int
+	Maxidle int
+	Maxactive int
+	Idletimeout int
 	Datatype string
 	Datapath string
 	Logpath  string

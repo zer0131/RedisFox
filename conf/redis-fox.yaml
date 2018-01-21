@@ -10,7 +10,16 @@ servers:
    conntype: tcp
 
 #获取redis信息间隔时间(秒)
-duration: 60
+sleeptime: 60
+
+#redis连接池最大连接数
+maxidle: 3
+
+#redis连接池最大活跃数,0表示无限制
+maxactive: 3
+
+#redis连接池连接超时时间,0表示不超时
+idletimeout: 0
 
 #存储数据类型
 datatype: sqlite
