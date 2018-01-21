@@ -58,7 +58,7 @@ func main() {
 		wg.Wait()
 	}()
 	for _,v := range config.Servers {
-		processNum := 2
+		processNum := 1
 		server := v["server"]
 		port, err := strconv.Atoi(v["port"])
 		conntype := v["conntype"]
@@ -66,19 +66,19 @@ func main() {
 			flog.Fatalf(err.Error())
 			os.Exit(1)
 		}
-		var passport string
-		if v["passport"] != "" {
-			passport = v["passport"]
+		var password string
+		if v["password"] != "" {
+			password = v["password"]
 		}
 
 		//开启redis info存储
-		_,infoErr := process.RunInfo(server,conntype,passport,port,config,probe)
+		/*_,infoErr := process.RunInfo(server,conntype,password,port,config,probe)
 		if infoErr != nil {
 			processNum--
-		}
+		}*/
 
 		//开启redis monitor
-		_,monitorErr := process.RunNonitor()
+		_,monitorErr := process.RunMonitor(server,conntype,password,port,config,probe)
 		if monitorErr != nil {
 			processNum--
 		}
