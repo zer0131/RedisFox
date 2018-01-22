@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"fmonitor/flog"
 	"fmt"
+	"fmonitor/dataprovider"
 )
 
 type Monitor struct {
@@ -17,7 +18,7 @@ type Monitor struct {
 	password string
 	port int
 	probe *util.Probe
-	//sqlDb dataprovider.DataProvider
+	sqlDb dataprovider.DataProvider
 	//redisPool *redis.Pool
 	maxidle int
 	maxactive int
@@ -52,12 +53,13 @@ func RunMonitor(server,conntype,password string, port int, config *conf.Config, 
 		return nil,err
 	}*/
 
-	//sd, err := dataprovider.NewProvider(config)
-	//if util.CheckError(err) == false {
-	//	return nil, err
-	//}
+	sd, err := dataprovider.NewProvider(config)
+	if util.CheckError(err) == false {
+		monitor.redisConn.Close()
+		return nil, err
+	}
 
-	//monitor.sqlDb = sd
+	monitor.sqlDb = sd
 
 	go monitor.loop()
 	flog.Infof(monitor.ServerId+" monitor start")
@@ -73,13 +75,15 @@ func (this *Monitor) loop()  {
 LOOP:
 	for{
 		select {
-		case <- this.probe.Chan():
+		case m := <- this.probe.Chan():
+			fmt.Println(m)
 			flog.Infof(this.ServerId+" monitor stop")
 			break LOOP
 		default:
 			this.saveRedisCommand()
 		}
 	}
+	this.sqlDb.Close()
 	this.redisConn.Close()
 	this.probe.Done()
 }

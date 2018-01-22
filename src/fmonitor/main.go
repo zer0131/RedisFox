@@ -53,12 +53,8 @@ func main() {
 	wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
 	probe := util.NewProbe(wg,closeCh)
-	defer func() {
-		close(closeCh)
-		wg.Wait()
-	}()
 	for _,v := range config.Servers {
-		processNum := 1
+		processNum := 2
 		server := v["server"]
 		port, err := strconv.Atoi(v["port"])
 		conntype := v["conntype"]
@@ -72,10 +68,10 @@ func main() {
 		}
 
 		//开启redis info存储
-		/*_,infoErr := process.RunInfo(server,conntype,password,port,config,probe)
+		_,infoErr := process.RunInfo(server,conntype,password,port,config,probe)
 		if infoErr != nil {
 			processNum--
-		}*/
+		}
 
 		//开启redis monitor
 		_,monitorErr := process.RunMonitor(server,conntype,password,port,config,probe)
@@ -90,6 +86,8 @@ func main() {
 	exitChan := make(chan os.Signal)
 	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
 	<-exitChan
+	close(closeCh)
+	wg.Wait()
 	flog.Infof("fmonitor shut down")
 }
 

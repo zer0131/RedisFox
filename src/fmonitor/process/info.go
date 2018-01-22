@@ -64,8 +64,8 @@ LOOP:
 			break LOOP
 		default:
 			this.saveRedisInfo()
+			time.Sleep(time.Second * this.sleepTime)
 		}
-		time.Sleep(time.Second * this.sleepTime)
 	}
 	this.sqlDb.Close()
 	this.redisConn.Close()
