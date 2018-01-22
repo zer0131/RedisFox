@@ -67,6 +67,7 @@ LOOP:
 			time.Sleep(time.Second * this.sleepTime)
 		}
 	}
+	this.saveRedisInfo()//最后执行一次info，用于退出在redis中阻塞的monitor
 	this.sqlDb.Close()
 	this.redisConn.Close()
 	this.probe.Done()

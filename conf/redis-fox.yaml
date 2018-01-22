@@ -8,9 +8,12 @@ servers:
  - server: 127.0.0.1
    port: 6379
    conntype: tcp
+# - server: 127.0.0.1
+#   port: 6479
+#   conntype: tcp
 
 #获取redis信息间隔时间(秒)
-sleeptime: 60
+sleeptime: 10
 
 #redis连接池最大连接数
 maxidle: 3

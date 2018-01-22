@@ -69,14 +69,10 @@ func RunMonitor(server,conntype,password string, port int, config *conf.Config, 
 
 func (this *Monitor) loop()  {
 
-	this.redisConn.Send("monitor")
-	this.redisConn.Flush()
-
 LOOP:
 	for{
 		select {
-		case m := <- this.probe.Chan():
-			fmt.Println(m)
+		case <- this.probe.Chan():
 			flog.Infof(this.ServerId+" monitor stop")
 			break LOOP
 		default:
@@ -89,10 +85,11 @@ LOOP:
 }
 
 func (this *Monitor) saveRedisCommand() error {
-	ret, err := redis.String(this.redisConn.Receive())
+	ret, err := redis.String(this.redisConn.Do("monitor"))
 	if util.CheckError(err) == false {
 		return err
 	}
 	fmt.Println(ret)
+	//code...
 	return nil
 }
