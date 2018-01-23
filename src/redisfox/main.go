@@ -5,12 +5,13 @@ import (
 	"os"
 	"flag"
 	"redisfox/flog"
-	"strconv"
+	/*"strconv"
 	"os/signal"
 	"syscall"
 	"sync"
 	"redisfox/util"
-	"redisfox/process"
+	"redisfox/process"*/
+	"github.com/gin-gonic/gin"
 )
 
 var cpath string
@@ -50,7 +51,14 @@ func init() {
 }*/
 
 func main() {
-	wg := new(sync.WaitGroup)
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+	r.Run()
+	/*wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
 	probe := util.NewProbe(wg,closeCh)
 	for _,v := range config.Servers {
@@ -88,6 +96,6 @@ func main() {
 	<-exitChan
 	close(closeCh)
 	wg.Wait()
-	flog.Infof("redisfox shut down")
+	flog.Infof("redisfox shut down")*/
 }
 
