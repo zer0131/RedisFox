@@ -1,13 +1,13 @@
 package process
 
 import (
-	"fmonitor/util"
-	"fmonitor/conf"
+	"redisfox/util"
+	"redisfox/conf"
 	"time"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
-	"fmonitor/flog"
-	"fmonitor/dataprovider"
+	"redisfox/flog"
+	"redisfox/dataprovider"
 	"strings"
 )
 

@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmonitor/conf"
+	"redisfox/conf"
 	"os"
 	"flag"
-	"fmonitor/flog"
+	"redisfox/flog"
 	"strconv"
 	"os/signal"
 	"syscall"
 	"sync"
-	"fmonitor/util"
-	"fmonitor/process"
+	"redisfox/util"
+	"redisfox/process"
 )
 
 var cpath string
@@ -88,6 +88,6 @@ func main() {
 	<-exitChan
 	close(closeCh)
 	wg.Wait()
-	flog.Infof("fmonitor shut down")
+	flog.Infof("redisfox shut down")
 }
 

@@ -2,7 +2,7 @@ package dataprovider
 
 import (
 	"testing"
-	"fmonitor/conf"
+	"redisfox/conf"
 	"flag"
 	"os"
 	"fmt"

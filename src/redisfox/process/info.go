@@ -1,14 +1,14 @@
 package process
 
 import (
-	"fmonitor/util"
-	"fmonitor/flog"
+	"redisfox/util"
+	"redisfox/flog"
 	"strconv"
-	"fmonitor/conf"
+	"redisfox/conf"
 	"time"
 	"github.com/garyburd/redigo/redis"
 	"strings"
-	"fmonitor/dataprovider"
+	"redisfox/dataprovider"
 )
 
 type Info struct {

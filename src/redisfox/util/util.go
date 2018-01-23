@@ -2,7 +2,7 @@ package util
 
 import (
 	"os"
-	"fmonitor/flog"
+	"redisfox/flog"
 )
 
 func PathExists(path string) (bool, error) {

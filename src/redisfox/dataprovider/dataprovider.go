@@ -1,7 +1,7 @@
 package dataprovider
 
 import (
-	"fmonitor/conf"
+	"redisfox/conf"
 )
 
 type DataProvider interface {
