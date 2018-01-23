@@ -16,6 +16,8 @@ type Config struct {
 	Logpath  string
 	Logname  string
 	Loglevel int
+	Serverip string
+	Serverport int
 }
 
 func NewConfig(path string) (*Config, error) {

@@ -32,3 +32,7 @@ datapath: ./data/redisfox.db
 logpath: ./log/
 logname: redisfox.log
 loglevel: 4
+
+#web相关
+serverip: 127.0.0.1
+serverport: 8080
