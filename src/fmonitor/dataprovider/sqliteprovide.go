@@ -6,6 +6,7 @@ import (
 	"fmonitor/util"
 	"time"
 	"encoding/json"
+	"strconv"
 )
 
 
@@ -72,8 +73,14 @@ func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string
 	return id
 }
 
-func (this *SqliteProvide) SaveMonitorCommand(server, command, argument, keyname string) int64 {
-	datetime := time.Now().Format("2006-01-02 15:04:05")
+func (this *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument, timestamp string) int64 {
+	var datetime string
+	if timestamp != "" {
+		timestampFloat, _ := strconv.ParseFloat(timestamp, 64)
+		datetime = time.Unix(int64(timestampFloat), 0).Format("2006-01-02 15:04:05")
+	} else {
+		datetime = time.Now().Format("2006-01-02 15:04:05")
+	}
 	stmt, err := this.db.Prepare("INSERT INTO monitor(server,command,arguments,keyname,datetime) VALUES(?,?,?,?,?)")
 	if util.CheckError(err) == false {
 		return 0

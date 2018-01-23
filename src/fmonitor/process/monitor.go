@@ -7,8 +7,8 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"strconv"
 	"fmonitor/flog"
-	"fmt"
 	"fmonitor/dataprovider"
+	"strings"
 )
 
 type Monitor struct {
@@ -89,7 +89,27 @@ func (this *Monitor) saveRedisCommand() error {
 	if util.CheckError(err) == false {
 		return err
 	}
-	fmt.Println(ret)
-	//code...
+	if ret != "" {
+		retArr := strings.Split(ret, " ")
+		if len(retArr) == 1 {
+			return nil
+		}
+		var newArr []string
+		if retArr[1] == "(db" || string([]byte(retArr[1])[0]) == "[" {
+			newArr = append([]string{retArr[0]}, retArr[3:]...)
+		}
+		command := strings.ToUpper(strings.Replace(newArr[1], "\"", "" , -1))
+		keyName := ""
+		if len(newArr) > 2 {
+			keyName = strings.Replace(newArr[2], "\"", "", -1)
+		}
+		arguments := ""
+		if len(newArr) > 3 {
+			for _,v := range newArr[3:] {
+				arguments += " " + strings.Replace(v, "\"", "", -1)
+			}
+		}
+		this.sqlDb.SaveMonitorCommand(this.ServerId, command, keyName, arguments, newArr[0])
+	}
 	return nil
 }
