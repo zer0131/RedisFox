@@ -11,7 +11,7 @@ import (
 	"sync"
 	"redisfox/util"
 	"redisfox/process"*/
-	"github.com/gin-gonic/gin"
+	"redisfox/server"
 )
 
 var cpath string
@@ -51,13 +51,7 @@ func init() {
 }*/
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run()
+	server.NewServer(config)
 	/*wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
 	probe := util.NewProbe(wg,closeCh)
