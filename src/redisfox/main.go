@@ -5,12 +5,12 @@ import (
 	"os"
 	"flag"
 	"redisfox/flog"
-	/*"strconv"
+	//"strconv"
 	"os/signal"
 	"syscall"
 	"sync"
-	"redisfox/util"
-	"redisfox/process"*/
+	//"redisfox/util"
+	//"redisfox/process"
 	"redisfox/server"
 )
 
@@ -39,7 +39,7 @@ func init() {
 /*func StorePid(path string) {
 	pid := os.Getpid()
 	if len(path) == 0 {
-		path = "./run_pusher.pid"
+		path = "./run_redisfox.pid"
 	}
 
 	fout, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
@@ -51,11 +51,15 @@ func init() {
 }*/
 
 func main() {
-	server.NewServer(config)
-	/*wg := new(sync.WaitGroup)
+	wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
-	probe := util.NewProbe(wg,closeCh)
-	for _,v := range config.Servers {
+	//probe := util.NewProbe(wg,closeCh)
+	defer func() {
+		close(closeCh)
+		wg.Wait()
+	}()
+
+	/*for _,v := range config.Servers {
 		processNum := 2
 		server := v["server"]
 		port, err := strconv.Atoi(v["port"])
@@ -84,12 +88,15 @@ func main() {
 		if processNum > 0 {
 			wg.Add(processNum)
 		}
-	}
+	}*/
+
+	serv := server.NewServer(config)
+	defer serv.Stop()
+
 	exitChan := make(chan os.Signal)
 	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
 	<-exitChan
-	close(closeCh)
-	wg.Wait()
-	flog.Infof("redisfox shut down")*/
+
+	flog.Infof("redisfox shutdown")
 }
 
