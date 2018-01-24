@@ -18,6 +18,8 @@ type Config struct {
 	Loglevel int
 	Serverip string
 	Serverport int
+	Staticdir string
+	Tpldir string
 }
 
 func NewConfig(path string) (*Config, error) {
