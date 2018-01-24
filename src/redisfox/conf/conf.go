@@ -27,7 +27,7 @@ func NewConfig(path string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	config := &Config{}
+	config := new(Config)
 	if err := yaml.Unmarshal([]byte(data), config); err != nil {
 		return nil, err
 	}
