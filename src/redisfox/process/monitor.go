@@ -109,7 +109,9 @@ func (this *Monitor) saveRedisCommand() error {
 				arguments += " " + strings.Replace(v, "\"", "", -1)
 			}
 		}
-		this.sqlDb.SaveMonitorCommand(this.ServerId, command, keyName, arguments, newArr[0])
+		if command != "INFO" && command != "MONITOR" {
+			this.sqlDb.SaveMonitorCommand(this.ServerId, command, keyName, arguments, newArr[0])
+		}
 	}
 	return nil
 }
