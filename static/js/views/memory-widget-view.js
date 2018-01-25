@@ -5,6 +5,7 @@ var MemoryWidget = BaseWidget.extend({
         this.Name = "Memory Widget";
 
         this.init();
+        this.updateFrequency = 30000;
 
         // templates
         var templateSelector = "#memory-widget-template"
