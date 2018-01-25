@@ -2,11 +2,10 @@ var InfoWidgetModel = Backbone.Model.extend({
 
     url: "api/info",
 
-    initialize: function() {        
-    },
+    initialize: function () {},
 
     defaults: {
-    	"databases" : {}
+        "databases": {}
     }
-     
-})
+
+});

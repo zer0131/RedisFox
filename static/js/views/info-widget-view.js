@@ -3,43 +3,36 @@
 
 var InfoWidget = BaseWidget.extend({
 
-  initialize : function() {  
+    initialize: function () {
 
-    this.Name = "Info Widget"
+        this.Name = "Info Widget";
 
-    this.init()
-    this.updateFrequency = 5000 // every 5 seconds
-        
-    // templates
-    var templateSource        = $("#info-widget-template").html()
-      , popOverTemplateSource = $("#popover-template").html()
-      , infoTemplateSource    = $("#info-template").html() 
+        this.init();
+        this.updateFrequency = 5000;// every 5 seconds
 
-    this.template         = Handlebars.compile(templateSource)
-    this.popOverTemplate  = Handlebars.compile(popOverTemplateSource)
-    this.infoTemplate     = Handlebars.compile(infoTemplateSource)
+        // templates
+        var templateSource = $("#info-widget-template").html()
+            , popOverTemplateSource = $("#popover-template").html()
+            , infoTemplateSource = $("#info-template").html();
 
-  }
-  
-, render: function() {
+        this.template = Handlebars.compile(templateSource);
+        this.popOverTemplate = Handlebars.compile(popOverTemplateSource);
+        this.infoTemplate = Handlebars.compile(infoTemplateSource);
 
-    var model         = this.model.toJSON()
-      , markUp        = this.template(model)
-      , popoverMarkup = this.popOverTemplate(model.databases)
-      , infoMarkup    = this.infoTemplate(model)
+    },
 
-    $(this.el).html(markUp)
-      
-    $('#total-keys').popover({
-                               "title" : "databases"
-                             , "content" : popoverMarkup
-                             })
+    render: function () {
 
-    $('#misc-info').popover({
-                              "title" : "info"
-                            , "content" : infoMarkup
-                            , "placement" : "bottom"
-                            })      
-  }
+        var model = this.model.toJSON()
+            , markUp = this.template(model)
+            , popoverMarkup = this.popOverTemplate(model.databases)
+            , infoMarkup = this.infoTemplate(model);
 
-})
+        $(this.el).html(markUp);
+
+        $('#total-keys').popover({"title": "databases", "content": popoverMarkup});
+
+        $('#misc-info').popover({"title": "info", "content": infoMarkup, "placement": "bottom"});
+    }
+
+});
