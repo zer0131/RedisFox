@@ -5,12 +5,12 @@ import (
 	"os"
 	"flag"
 	"redisfox/flog"
-	//"strconv"
+	"strconv"
 	"os/signal"
 	"syscall"
 	"sync"
-	//"redisfox/util"
-	//"redisfox/process"
+	"redisfox/util"
+	"redisfox/process"
 	"redisfox/server"
 )
 
@@ -53,13 +53,13 @@ func init() {
 func main() {
 	wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
-	//probe := util.NewProbe(wg,closeCh)
+	probe := util.NewProbe(wg,closeCh)
 	defer func() {
 		close(closeCh)
 		wg.Wait()
 	}()
 
-	/*for _,v := range config.Servers {
+	for _,v := range config.Servers {
 		processNum := 2
 		server := v["server"]
 		port, err := strconv.Atoi(v["port"])
@@ -88,7 +88,7 @@ func main() {
 		if processNum > 0 {
 			wg.Add(processNum)
 		}
-	}*/
+	}
 
 	serv := server.NewServer(config)
 	defer serv.Stop()
