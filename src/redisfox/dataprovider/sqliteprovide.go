@@ -111,6 +111,7 @@ func (this *SqliteProvide) GetInfo(serverId string) (map[string]interface{}, err
 }
 
 func (this *SqliteProvide) GetMemoryInfo(server, fromDate, toDate string) ([]map[string]interface{}, error) {
+	//sql := "SELECT used,peak,datetime FROM memory WHERE server=? AND datetime>=? AND datetime<=?"
 	return nil, nil
 }
 
