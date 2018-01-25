@@ -96,13 +96,9 @@ func (this *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument,
 	return id
 }
 
-func (this *SqliteProvide) Close() error {
-	return this.db.Close()
-}
-
-/*func (this *SqliteProvide) GetInfo(server string) (map[string]interface{}, error) {
+func (this *SqliteProvide) GetInfo(serverId string) (map[string]interface{}, error) {
 	var info string
-	err := this.db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", server).Scan(&info)
+	err := this.db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", serverId).Scan(&info)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -116,7 +112,11 @@ func (this *SqliteProvide) Close() error {
 
 func (this *SqliteProvide) GetMemoryInfo(server, fromDate, toDate string) ([]map[string]interface{}, error) {
 	return nil, nil
-}*/
+}
+
+func (this *SqliteProvide) Close() error {
+	return this.db.Close()
+}
 
 func (this *SqliteProvide) createTable() error {
 	sqlData := `
