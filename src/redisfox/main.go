@@ -61,7 +61,7 @@ func main() {
 
 	for _,v := range config.Servers {
 		processNum := 2
-		server := v["server"]
+		srv := v["server"]
 		port, err := strconv.Atoi(v["port"])
 		conntype := v["conntype"]
 		if err != nil {
@@ -74,13 +74,13 @@ func main() {
 		}
 
 		//开启redis info存储
-		_,infoErr := process.RunInfo(server,conntype,password,port,config,probe)
+		_,infoErr := process.RunInfo(srv,conntype,password,port,config,probe)
 		if infoErr != nil {
 			processNum--
 		}
 
 		//开启redis monitor
-		_,monitorErr := process.RunMonitor(server,conntype,password,port,config,probe)
+		_,monitorErr := process.RunMonitor(srv,conntype,password,port,config,probe)
 		if monitorErr != nil {
 			processNum--
 		}
