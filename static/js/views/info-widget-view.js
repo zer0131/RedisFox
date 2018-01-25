@@ -30,9 +30,9 @@ var InfoWidget = BaseWidget.extend({
 
         $(this.el).html(markUp);
 
-        $('#total-keys').popover({"title": "databases", "content": popoverMarkup});
+        $('#total-keys').popover({"title": "DataBases", "content": popoverMarkup});
 
-        $('#misc-info').popover({"title": "info", "content": infoMarkup, "placement": "bottom"});
+        $('#misc-info').popover({"title": "Info", "content": infoMarkup, "placement": "bottom"});
     }
 
 });
