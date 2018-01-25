@@ -16,7 +16,7 @@ var MemoryWidget = BaseWidget.extend({
         // chart
         this.chart = new google.visualization.LineChart($("#memory-widget-chart").empty().get(0));
         this.dataTable = new google.visualization.DataTable();
-        this.dataTable.addColumn('datetime', 'datetime');
+        this.dataTable.addColumn('datetime', 'DateTime');
         this.dataTable.addColumn('number', 'Max');
         this.dataTable.addColumn('number', 'Current');
     },
@@ -33,10 +33,13 @@ var MemoryWidget = BaseWidget.extend({
 
             // first item of the object contains datetime info
             // [ YYYY, MM, DD, HH, MM, SS ]
-            var recordDate = new Date(obj[0][0], obj[0][1] - 1, obj[0][2], obj[0][3], obj[0][4], obj[0][5])
+            var datetimeArr = obj[0].split(" ");
+            var dateArr = datetimeArr[0].split("-");
+            var timeArr = datetimeArr[1].split(":");
+            var recordDate = new Date(parseInt(dateArr[0]), parseInt(dateArr[1]) - 1, parseInt(dateArr[2]), parseInt(timeArr[0]), parseInt(timeArr[1]), parseInt(timeArr[2]));
 
             if (self.dataTable)
-                self.dataTable.addRow([recordDate, obj[1], obj[2]])
+                self.dataTable.addRow([recordDate, parseInt(obj[1]), parseInt(obj[2])]);
         });
 
         var pointSize = model.data.length > 120 ? 1 : 5
@@ -52,5 +55,4 @@ var MemoryWidget = BaseWidget.extend({
 
         this.chart.draw(this.dataTable, options);
     }
-})
-''
+});

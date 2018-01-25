@@ -7,6 +7,7 @@ import (
 	"time"
 	"encoding/json"
 	"strconv"
+	"redisfox/flog"
 )
 
 
@@ -110,9 +111,26 @@ func (this *SqliteProvide) GetInfo(serverId string) (map[string]interface{}, err
 	return jsonMap, nil
 }
 
-func (this *SqliteProvide) GetMemoryInfo(server, fromDate, toDate string) ([]map[string]interface{}, error) {
-	//sql := "SELECT used,peak,datetime FROM memory WHERE server=? AND datetime>=? AND datetime<=?"
-	return nil, nil
+func (this *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
+	sql := "SELECT used,peak,datetime FROM memory WHERE server=? AND datetime>=? AND datetime<=?"
+	rows, err := this.db.Query(sql, serverId, fromDate, toDate)
+	if util.CheckError(err) == false {
+		return nil,err
+	}
+	var ret []map[string]interface{}
+	for rows.Next() {
+		var (
+			used string
+			peak string
+			datetime string
+		)
+		if err := rows.Scan(&used,&peak,&datetime);err != nil {
+			flog.Fatalf(err.Error())
+			continue
+		}
+		ret = append(ret,map[string]interface{}{"used":used,"peak":peak,"datetime":datetime})
+	}
+	return ret, nil
 }
 
 func (this *SqliteProvide) Close() error {

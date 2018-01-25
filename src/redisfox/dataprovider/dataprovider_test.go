@@ -18,7 +18,7 @@ func init() {
 	if cpath == "" {
 		os.Exit(1)
 	}
-	c, err := conf.New(cpath)
+	c, err := conf.NewConfig(cpath)
 	if err != nil {
 		os.Exit(1)
 	}
@@ -26,5 +26,6 @@ func init() {
 }
 
 func TestNewProvider(t *testing.T) {
-	fmt.Println(NewProvider(config).SaveMemoryInfo("127.0.0.1:6379", 12123, 1231231))
+	sqlDb,_ := NewProvider(config)
+	fmt.Println(sqlDb.GetMemoryInfo("127.0.0.1:6379","2018-01-22 00:00:00", "2018-01-22 01:00:00"))
 }

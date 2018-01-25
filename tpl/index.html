@@ -122,7 +122,7 @@
             <td>
               <div class="info-box" id="total-keys">
                 <center>         
-                  <p>KEY总数</p>
+                  <p>键总数</p>
                   <p class="well-value">{{total_keys}}</p>
                 </center>       
               </div>
@@ -193,10 +193,10 @@
     <div class="span12">
       <div class="row-fluid">              
         <div class="span4">
-          <h3>Memory Consumption</h3>              
+          <h3>内存趋势</h3>
         </div>
         <div class="" style="float:right">
-          {{> date-dropdown}}                                       
+          {{> date-dropdown}}
         </div>
       </div>
       <div id="memory-widget-chart"></div>         
@@ -209,7 +209,7 @@
     <div class="span12">
       <div class="row-fluid">              
         <div class="span4">
-          <h3>Commands Processed</h3>              
+          <h3>命令处理</h3>
         </div>
         <div class="" style="float:right">
           {{> date-dropdown}}                                       
@@ -224,7 +224,7 @@
   <script type="text/x-handlebars-template" id="top-commands-widget-template">
     <div class="row-fluid">              
       <div class="span6">
-        <h3>Top Commands</h3>                  
+        <h3>命令排行</h3>
       </div>      
       <div class="" style="float:right">
         {{> date-dropdown}}                                
@@ -238,7 +238,7 @@
   <script type="text/x-handlebars-template" id="top-keys-widget-template">
     <div class="row-fluid">              
       <div class="span6">
-        <h3>Top Keys</h3>                  
+        <h3>键数排行</h3>
       </div>      
       <div class="" style="float:right">
         {{> date-dropdown}}                                
@@ -253,38 +253,38 @@
     <form class="form-inline" onsubmit="return false;">
       <div class="btn-toolbar" style="">
         <div class="btn-group">
-          <button class="btn btn-small">realtime</button>
+          <button class="btn btn-small">日期选择</button>
           <button class="btn btn-small dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
           <ul class="dropdown-menu">
-            <li><a href="#" class="time-period" data-type="realtime" data-time="0">realtime</a></li>
+            <li><a href="#" class="time-period" data-type="realtime" data-time="0">快捷选择</a></li>
             <li class="divider"></li>
-            <li><a href="#" class="time-period" data-type="minute" data-time="15">last 15 min</a></li>
-            <li><a href="#" class="time-period" data-type="minute" data-time="30">last 30 min</a></li>
-            <li><a href="#" class="time-period" data-type="minute" data-time="45">last 45 min</a></li>
+            <li><a href="#" class="time-period" data-type="minute" data-time="15">最近15分钟</a></li>
+            <li><a href="#" class="time-period" data-type="minute" data-time="30">最近30分钟</a></li>
+            <li><a href="#" class="time-period" data-type="minute" data-time="45">最近45分钟</a></li>
             <li class="divider"></li>
-            <li><a href="#" class="time-period" data-type="hour" data-time="1">last 1 hour</a></li>
-            <li><a href="#" class="time-period" data-type="hour" data-time="3">last 3 hours</a></li>
-            <li><a href="#" class="time-period" data-type="hour" data-time="12">last 12 hours</a></li>
+            <li><a href="#" class="time-period" data-type="hour" data-time="1">最近1小时</a></li>
+            <li><a href="#" class="time-period" data-type="hour" data-time="3">最近3小时</a></li>
+            <li><a href="#" class="time-period" data-type="hour" data-time="12">最近12小时</a></li>
             <li class="divider"></li>
-            <li><a href="#" class="time-period" data-type="day" data-time="1">last 1 day</a></li>
-            <li><a href="#" class="time-period" data-type="day" data-time="2">last 2 days</a></li>
-            <li><a href="#" class="time-period" data-type="day" data-time="3">last 3 days</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="1">最近1天</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="2">最近2天</a></li>
+            <!--<li><a href="#" class="time-period" data-type="day" data-time="3">last 3 days</a></li>
             <li><a href="#" class="time-period" data-type="day" data-time="4">last 4 days</a></li>
             <li><a href="#" class="time-period" data-type="day" data-time="5">last 5 days</a></li>
-            <li><a href="#" class="time-period" data-type="day" data-time="6">last 6 days</a></li>
+            <li><a href="#" class="time-period" data-type="day" data-time="6">last 6 days</a></li>-->
             <li class="divider"></li>
-            <li><a href="#" class="time-period" data-type="week" data-time="1">last 1 week</a></li>
-            <li><a href="#" class="time-period" data-type="week" data-time="2">last 2 weeks</a></li>
+            <li><a href="#" class="time-period" data-type="week" data-time="1">最近1周</a></li>
+            <!--<a href="#" class="time-period" data-type="week" data-time="2">last 2 weeks</a></li>-->
             <li class="divider"></li>
-            <li><a href="#" class="time-period" data-type="month" data-time="1">last 1 month</a></li>
+            <li><a href="#" class="time-period" data-type="month" data-time="1">最近1个月</a></li>
             <li class="divider"></li>
-            <li><a href="#" class="time-period" data-type="custom" data-time="0">custom</a></li>
+            <li><a href="#" class="time-period" data-type="custom" data-time="0">自定义</a></li>
           </ul>
         </div>
         <div class="date-control hide">
-          <input type="text" class="input-small" placeholder="from" name="from">
-          <input type="text" class="input-small" placeholder="to" name="to">
-          <button type="button" class="btn go" >go</button>
+          <input type="text" class="input-small" placeholder="开始日期" name="from">
+          <input type="text" class="input-small" placeholder="结束日期" name="to">
+          <button type="button" class="btn go" >确定</button>
         </div>                   
       </div>
     </form> 

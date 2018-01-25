@@ -10,7 +10,7 @@ type DataProvider interface {
 	SaveMonitorCommand(server, command, argument, keyname, timestamp string) int64
 	Close() error
 	GetInfo(serverId string) (map[string]interface{}, error)
-	GetMemoryInfo(server, fromDate, toDate string) ([]map[string]interface{}, error)
+	GetMemoryInfo(serverId, fromDate, toDate string) ([]map[string]interface{}, error)
 }
 
 func NewProvider(config *conf.Config) (DataProvider,error) {
