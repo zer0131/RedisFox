@@ -13,7 +13,7 @@ servers:
 #   conntype: tcp
 
 #获取redis信息间隔时间(秒)
-sleeptime: 10
+sleeptime: 30
 
 #redis连接池最大连接数
 maxidle: 3
