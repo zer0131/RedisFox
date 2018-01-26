@@ -1,7 +1,8 @@
 var MemoryWidgetModel = Backbone.Model.extend({
-  
-  url : "api/memory",
 
-  initialize : function(){}
+    url: "api/memory",
+
+    initialize: function () {
+    }
 
 });

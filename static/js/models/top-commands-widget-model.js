@@ -1,9 +1,8 @@
 var TopCommandsWidgetModel = Backbone.Model.extend({
-  
-  url : "api/topcommands",
 
-  initialize : function(){
+    url: "api/topcommands",
 
-  }
+    initialize: function () {
+    }
 
-})
+});

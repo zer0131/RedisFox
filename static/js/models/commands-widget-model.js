@@ -1,7 +1,8 @@
 var CommandsWidgetModel = Backbone.Model.extend({
-  
-  url : "api/commands",
 
-  initialize : function(){}
+    url: "api/commands",
+
+    initialize: function () {
+    }
 
 });
