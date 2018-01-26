@@ -195,6 +195,30 @@ func (this *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string
 	return ret, nil
 }
 
+func (this *SqliteProvide) GetTopKeysStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
+	sql := "SELECT keyname, COUNT(*) AS total FROM monitor WHERE datetime >= ? AND datetime <= ? AND server = ? GROUP BY keyname ORDER BY total DESC LIMIT 10"
+
+	rows, err := this.db.Query(sql, fromDate,toDate,serverId)
+	if util.CheckError(err) == false {
+		return nil, err
+	}
+
+	var ret []map[string]interface{}
+	for rows.Next() {
+		var (
+			total string
+			keyname string
+		)
+		err := rows.Scan(&keyname,&total)//一定要注意变量顺序
+		if util.CheckError(err) == false {
+			continue
+		}
+		ret = append(ret, map[string]interface{}{"total":total,"keyname":keyname})
+	}
+
+	return ret, nil
+}
+
 func (this *SqliteProvide) Close() error {
 	return this.db.Close()
 }

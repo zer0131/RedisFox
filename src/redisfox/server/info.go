@@ -81,22 +81,22 @@ func (this *Server) shortenNumber(number int) string {
 func (this *Server) uptimeInSeconds(seconds int) string {
 	var val string
 	if seconds < 60 {
-		val = strconv.Itoa(seconds) + "s"
+		val = strconv.Itoa(seconds) + "sec"
 	} else if seconds <= 3600 {
 		if num := seconds/60;num == 60 {
-			val = "1h"
+			val = "1hour"
 		} else {
-			val = strconv.Itoa(num) + "m"
+			val = strconv.Itoa(num) + "min"
 		}
 	} else if seconds <= 60*60*24 {
 		if num := seconds/3600;num == 24 {
-			val = "1d"
+			val = "1day"
 		} else {
-			val = strconv.Itoa(num) + "h"
+			val = strconv.Itoa(num) + "hour"
 		}
 	} else {
 		num := seconds/(60*60*24)
-		val = strconv.Itoa(num) + "d"
+		val = strconv.Itoa(num) + "day"
 	}
 	return val
 }
