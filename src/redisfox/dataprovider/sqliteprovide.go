@@ -171,6 +171,30 @@ func (this *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy s
 	return ret, nil
 }
 
+func (this *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error)  {
+	sql := "SELECT command, COUNT(*) AS total FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY command ORDER BY total ASC"
+
+	rows, err := this.db.Query(sql, fromDate,toDate,serverId)
+	if util.CheckError(err) == false {
+		return nil, err
+	}
+
+	var ret []map[string]interface{}
+	for rows.Next() {
+		var (
+			total string
+			command string
+		)
+		err := rows.Scan(&command,&total)//一定要注意变量顺序
+		if util.CheckError(err) == false {
+			continue
+		}
+		ret = append(ret, map[string]interface{}{"total":total,"command":command})
+	}
+
+	return ret, nil
+}
+
 func (this *SqliteProvide) Close() error {
 	return this.db.Close()
 }

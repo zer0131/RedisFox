@@ -28,5 +28,5 @@ func init() {
 func TestNewProvider(t *testing.T) {
 	sqlDb,_ := NewProvider(config)
 	defer sqlDb.Close()
-	fmt.Println(sqlDb.GetCommandStats("127.0.0.1:6379","2018-01-25 00:00:00", "2018-01-25 23:00:00", "minute"))
+	fmt.Println(sqlDb.GetTopCommandsStats("127.0.0.1:6379","2018-01-22 00:00:00", "2018-01-25 23:00:00"))
 }
