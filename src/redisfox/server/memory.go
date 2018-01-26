@@ -15,10 +15,11 @@ func (this *Server) memory(context *gin.Context)  {
 	var start string
 	var end string
 	now := time.Now()
+	layout := "2006-01-02 15:04:05"
 	if fromDate == "" || toDate == "" {
-		end = now.Format("2006-01-02 15:04:05")
+		end = now.Format(layout)
 		endTmp,_ := time.ParseDuration("-60s")
-		start = now.Add(endTmp).Format("2006-01-02 15:04:05")
+		start = now.Add(endTmp).Format(layout)
 	} else {
 		start = fromDate
 		end = toDate
@@ -36,6 +37,6 @@ func (this *Server) memory(context *gin.Context)  {
 
 	context.JSON(http.StatusOK, gin.H{
 		"data":data,
-		"timestamp":now.Format("2006-01-02 15:04:05"),
+		"timestamp":now.Format(layout),
 	})
 }
