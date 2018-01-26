@@ -11,6 +11,7 @@ type DataProvider interface {
 	Close() error
 	GetInfo(serverId string) (map[string]interface{}, error)
 	GetMemoryInfo(serverId, fromDate, toDate string) ([]map[string]interface{}, error)
+	GetCommandStats(serverId, fromDate, toDate, groupBy string) ([]map[string]interface{}, error)
 }
 
 func NewProvider(config *conf.Config) (DataProvider,error) {

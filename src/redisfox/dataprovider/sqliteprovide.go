@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"redisfox/flog"
+	"fmt"
 )
 
 
@@ -130,6 +131,43 @@ func (this *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]m
 		}
 		ret = append(ret,map[string]interface{}{"used":used,"peak":peak,"datetime":datetime})
 	}
+	return ret, nil
+}
+
+func (this *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy string) ([]map[string]interface{}, error) {
+	sql := "SELECT COUNT(*) AS total, strftime('%s', datetime) AS datetime FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY strftime('%s', datetime) ORDER BY datetime DESC"
+
+	var queryTimeFmt string
+	if groupBy == "day" {
+		queryTimeFmt = "%Y-%m-%d"
+	} else if groupBy == "hour" {
+		queryTimeFmt = "%Y-%m-%d %H"
+	} else if groupBy == "minute" {
+		queryTimeFmt = "%Y-%m-%d %H:%M"
+	} else {
+		queryTimeFmt = "%Y-%m-%d %H:%M:%S"
+	}
+
+	sql = fmt.Sprintf(sql, queryTimeFmt, queryTimeFmt)
+
+	rows, err := this.db.Query(sql, fromDate,toDate,serverId)
+	if util.CheckError(err) == false {
+		return nil, err
+	}
+
+	var ret []map[string]interface{}
+	for rows.Next() {
+		var (
+			total string
+			datetime string
+		)
+		err := rows.Scan(&total,&datetime)
+		if util.CheckError(err) == false {
+			continue
+		}
+		ret = append(ret, map[string]interface{}{"total":total,"datetime":datetime})
+	}
+
 	return ret, nil
 }
 
