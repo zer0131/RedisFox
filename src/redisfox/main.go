@@ -32,11 +32,11 @@ func init() {
 	}
 	config = c
 	flog.Init(config.Logname, config.Logpath, config.Loglevel)
-	//StorePid("")
+	StorePid("")
 }
 
 //存储pid
-/*func StorePid(path string) {
+func StorePid(path string) {
 	pid := os.Getpid()
 	if len(path) == 0 {
 		path = "./run_redisfox.pid"
@@ -48,7 +48,7 @@ func init() {
 	}
 	defer fout.Close()
 	fout.WriteString(strconv.Itoa(pid))
-}*/
+}
 
 func main() {
 	wg := new(sync.WaitGroup)

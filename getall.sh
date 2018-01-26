@@ -5,13 +5,6 @@ old_gopath=$GOPATH
 export GOPATH=$curr_dir
 
 src_dir="src"
-#if [ ! -d ${src_dir}"/github.com/astaxie/beego" ]; then
-#    go get "github.com/astaxie/beego"
-#fi
-
-#if [ ! -d ${src_dir}"/github.com/beego/bee" ]; then
-#    go get "github.com/beego/bee"
-#fi
 
 if [ ! -d ${src_dir}"/github.com/gin-gonic/gin" ]; then
     go get github.com/gin-gonic/gin

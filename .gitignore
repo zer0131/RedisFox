@@ -119,4 +119,5 @@ nb-configuration.xml
 .glide/
 
 # costom project
+run_redisfox.pid
 
