@@ -6,7 +6,14 @@ RedisFox是一款基于Golang开发的Redis可视化监控工具。
 
 ![redisfox](./redisfox.png)
 
-## 安装及运行
+## 最新版本下载
+
+File Name|Kind|OS|Size
+----|----|----|----|----
+[redisfox1.0.darwin-amd64.tar.gz](http://7xkyq4.com1.z0.glb.clouddn.com/redisfox/redisfox1.0.darwin-amd64.tar.gz)|Archive|MacOS|6M
+[redisfox1.0.linux-amd64.tar.gz](http://7xkyq4.com1.z0.glb.clouddn.com/redisfox/redisfox1.0.linux-amd64.tar.gz)|Archive|Linux|6M
+
+## 编译安装及运行
 
 假设你已经配置好Golang环境（作者用的是Go1.9.2环境）
 
