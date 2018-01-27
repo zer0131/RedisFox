@@ -20,6 +20,11 @@ func NewServer(config *conf.Config) *Server {
 	server.config = config
 	server.srv = new(http.Server)
 
+	//关闭调试模式
+	if server.config.Debugmode == 0 {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.Default()
 
 	//静态文件处理
@@ -53,9 +58,8 @@ func NewServer(config *conf.Config) *Server {
 }
 
 func (this *Server) start() {
-	err := this.srv.ListenAndServe()
-	if err != nil {
-		flog.Fatalf("web server start error: "+err.Error())
+	if err := this.srv.ListenAndServe(); err != nil {
+		flog.Fatalf("listen " +this.srv.Addr+ " errmsg: "+err.Error())
 	}
 }
 
@@ -64,7 +68,7 @@ func (this *Server) Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	if err := this.srv.Shutdown(ctx); err != nil {
-		flog.Fatalf("web server shutdown error: "+err.Error())
+		flog.Fatalf("web server shutdown errmsg: "+err.Error())
 	}
 	flog.Infof("web server shutdown")
 }

@@ -38,6 +38,8 @@ loglevel: 4
 serverip: 127.0.0.1
 #web访问端口
 serverport: 8080
+#web调试模式是否开启
+debugmode: 0
 
 #静态文件目录
 staticdir: ./static/

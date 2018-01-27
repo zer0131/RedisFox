@@ -20,6 +20,7 @@ type Config struct {
 	Serverport int
 	Staticdir string
 	Tpldir string
+	Debugmode int
 }
 
 func NewConfig(path string) (*Config, error) {
