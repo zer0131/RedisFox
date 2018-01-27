@@ -23,13 +23,13 @@ git clone https://github.com/zer0131/RedisFox.git
 3. 获取其他依赖包
 
 ```
-sh getall.sh
+sh pkg.sh
 ```
 
-4. 安装
+4. 编译安装
 
 ```
-sh install.sh
+sh build.sh
 ```
 
 5. 运行
@@ -37,6 +37,7 @@ sh install.sh
 在 **conf/redis-fox.yaml** 配置redis服务器，并开启redis，然后执行start.sh脚本
 
 ```
+cd output
 sh start.sh
 ```
 

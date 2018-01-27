@@ -120,4 +120,5 @@ nb-configuration.xml
 
 # costom project
 run_redisfox.pid
+output/
 
