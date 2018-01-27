@@ -129,7 +129,7 @@ staticdir: ./static/
 tpldir: ./tpl/
 ```
 
-## 使用Nginx
+## Nginx反向代理
 
 ```
 server {
