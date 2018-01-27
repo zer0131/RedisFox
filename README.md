@@ -134,6 +134,7 @@ server {
     location / { # 如果你希望通过子路径访问，此处修改为子路径，注意以 / 开头并以 / 结束
         proxy_pass http://127.0.0.1:8080/;
     }
+    access_log  /your-path/nginx/logs/redisfox.log;
 }
 ```
 
