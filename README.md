@@ -119,4 +119,19 @@ staticdir: ./static/
 tpldir: ./tpl/
 ```
 
+## 使用Nginx
+
+```
+server {
+    server_name 域名或IP;
+    listen 80; # 或者 443，如果你使用 HTTPS 的话
+    # ssl on; 是否启用加密连接
+    # 如果你使用 HTTPS，还需要填写 ssl_certificate 和 ssl_certificate_key
+
+    location / { # 如果你希望通过子路径访问，此处修改为子路径，注意以 / 开头并以 / 结束
+        proxy_pass http://127.0.0.1:8080/;
+    }
+}
+```
+
 
