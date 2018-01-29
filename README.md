@@ -71,8 +71,8 @@ sh stop.sh
 ├─data                   数据目录
 ├─static                 静态资源目录
 ├─tpl                    模板目录
-├─getall.sh              获取go依赖脚本
-├─install.sh             程序编译安装脚本
+├─pkg.sh                 获取go依赖脚本
+├─build.sh               程序编译安装脚本
 ├─start.sh               程序运行脚本
 ├─stop.sh                程序停止脚本
 └─redisfox.png           程序网页截图
