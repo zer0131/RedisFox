@@ -93,6 +93,7 @@ servers:
  - server: 127.0.0.1
    port: 6379
    conntype: tcp
+   password: 123456 #redis密码，根据自己的需求更改，无密码不用配置
 
 #获取redis信息间隔时间(秒)
 sleeptime: 30
