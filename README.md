@@ -23,11 +23,14 @@ File Name|Kind|OS|Size
 git clone https://github.com/zer0131/RedisFox.git
 ```
 
-2. 安装golang.org/x/net/context包
+2. 获取依赖包
 
-去[https://gopm.io/](https://gopm.io/)下载压缩包，解压后，将文件夹中的内容复制到 **src/golang.org/x/net/** 目录下（没有目录自行创建）
+**项目使用glide管理依赖，首先你要在你的环境下安装glide**
 
-3. 获取其他依赖包
+[https://glide.readthedocs.io/en/latest/](https://glide.readthedocs.io/en/latest/)
+
+glide.yaml配置在src/redisfox目录下
+
 
 ```
 sh pkg.sh
