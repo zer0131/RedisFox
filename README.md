@@ -149,4 +149,24 @@ server {
 }
 ```
 
+## Glide配置
+
+```
+package: redisfox
+import:
+- package: github.com/garyburd/redigo
+  version: ^1.4.0
+  subpackages:
+  - redis
+- package: github.com/gin-gonic/gin
+  version: ^1.2.0
+- package: github.com/go-yaml/yaml
+- package: github.com/mattn/go-sqlite3
+  version: ^1.6.0
+- package: golang.org/x/net
+  repo: https://github.com/golang/net.git
+- package: golang.org/x/sys
+  repo: https://github.com/golang/sys.git
+```
+
 
