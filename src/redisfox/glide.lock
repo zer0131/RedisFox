@@ -1,8 +1,8 @@
 hash: c5e8ee7107cd41f536cbdfa4c26e6e125779ab4fcee2d1b55e23b5eab2b4c1c1
-updated: 2018-02-08T22:05:18.785872109+08:00
+updated: 2018-03-04T23:27:46.08712078+08:00
 imports:
 - name: github.com/garyburd/redigo
-  version: d1ed5c67e5794de818ea85e6b522fda02623a484
+  version: a69d19351219b6dd56f274f96d85a7014a2ec34e
   subpackages:
   - internal
   - redis
@@ -14,7 +14,7 @@ imports:
   - binding
   - render
 - name: github.com/go-yaml/yaml
-  version: d670f9405373e636a5a2765eea47fac0c9bc91a4
+  version: 7f97868eec74b32b0982dd158a51a446d1da7eb5
 - name: github.com/golang/protobuf
   version: bbd03ef6da3a115852eaf24c8a1c46aeb39aa175
   subpackages:
@@ -24,14 +24,14 @@ imports:
 - name: github.com/mattn/go-sqlite3
   version: 6c771bb9887719704b210e87e934f08be014bdb1
 - name: github.com/ugorji/go
-  version: b5b949564861e43a03568a0b134c135cf318e5c8
+  version: 16f09ef744fd4227190f626f14cfdefb14362b3b
   subpackages:
   - codec
 - name: golang.org/x/net
-  version: f5dfe339be1d06f81b22525fe34671ee7d2c8904
+  version: 22ae77b79946ea320088417e4d50825671d82d57
   repo: https://github.com/golang/net.git
 - name: golang.org/x/sys
-  version: 37707fdb30a5b38865cfb95e5aab41707daec7fd
+  version: dd2ff4accc098aceecb86b36eaa7829b2a17b1c9
   repo: https://github.com/golang/sys.git
   subpackages:
   - unix
