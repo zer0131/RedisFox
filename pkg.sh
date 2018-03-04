@@ -5,6 +5,7 @@ if ! command -v glide >/dev/null 2>&1; then
   exit 1
 fi
 
+# 更改目录
 curr_dir=$(cd `dirname $0`; pwd)
 old_gopath=$GOPATH
 export GOPATH=$curr_dir
