@@ -16,8 +16,8 @@ cp bin/redisfox output/bin/
 cp -r conf output/
 cp -r tpl output/
 cp -r static output/
-cp start.sh output/
-cp stop.sh output/
+cp tool/start.sh output/
+cp tool/stop.sh output/
 
 echo "build complete!"
 

@@ -4,7 +4,7 @@
 
 RedisFox是一款基于Golang开发的Redis可视化监控工具。
 
-![redisfox](./redisfox.png)
+![redisfox](./tool/redisfox.png)
 
 ## 最新版本下载
 
@@ -74,11 +74,9 @@ sh stop.sh
 ├─data                   数据目录
 ├─static                 静态资源目录
 ├─tpl                    模板目录
+├─tool                   工具目录
 ├─pkg.sh                 获取go依赖脚本
-├─build.sh               程序编译安装脚本
-├─start.sh               程序运行脚本
-├─stop.sh                程序停止脚本
-└─redisfox.png           程序网页截图
+└─build.sh               程序编译安装脚本
 ```
 
 ## 配置说明
