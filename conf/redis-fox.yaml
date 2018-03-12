@@ -31,8 +31,9 @@ datapath: ./data/redisfox.db
 
 #日志相关
 logpath: ./log/
-logname: redisfox.log
-loglevel: 4
+logname: redisfox
+loglevel: DEBUG
+logexpire: 7
 
 #web访问ip
 serverip: 127.0.0.1

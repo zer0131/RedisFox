@@ -7,8 +7,8 @@ import (
 	"time"
 	"encoding/json"
 	"strconv"
-	"redisfox/flog"
 	"fmt"
+	"github.com/zer0131/logfox"
 )
 
 
@@ -126,7 +126,7 @@ func (this *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]m
 			datetime string
 		)
 		if err := rows.Scan(&used,&peak,&datetime);err != nil {
-			flog.Fatalf(err.Error())
+			logfox.Error(err.Error())
 			continue
 		}
 		ret = append(ret,map[string]interface{}{"used":used,"peak":peak,"datetime":datetime})

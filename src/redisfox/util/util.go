@@ -2,7 +2,7 @@ package util
 
 import (
 	"os"
-	"redisfox/flog"
+	"github.com/zer0131/logfox"
 )
 
 func PathExists(path string) (bool, error) {
@@ -18,7 +18,7 @@ func PathExists(path string) (bool, error) {
 
 func CheckError(err error) bool {
 	if err != nil {
-		flog.Fatalf(err.Error())
+		logfox.Error(err.Error())
 		return false
 	}
 	return true

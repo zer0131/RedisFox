@@ -4,7 +4,6 @@ import (
 	"redisfox/conf"
 	"os"
 	"flag"
-	"redisfox/flog"
 	"strconv"
 	"os/signal"
 	"syscall"
@@ -12,6 +11,8 @@ import (
 	"redisfox/util"
 	"redisfox/process"
 	"redisfox/server"
+	"github.com/zer0131/logfox"
+	"log"
 )
 
 var cpath string
@@ -22,16 +23,16 @@ func init() {
 	flag.StringVar(&cpath, "config", "./conf/redis-fox.yaml", "config path with yml format")
 	flag.Parse()
 	if cpath == "" {
-		flog.Fatalf("config path not found")
+		log.Fatalf("config path: %s error", cpath)
 		os.Exit(1)
 	}
 	c, err := conf.NewConfig(cpath)
 	if err != nil {
-		flog.Fatalf(err.Error())
+		log.Fatal(err.Error())
 		os.Exit(1)
 	}
 	config = c
-	flog.Init(config.Logname, config.Logpath, config.Loglevel)
+	logfox.Init(config.Logpath, config.Logname, config.Loglevel, config.Logexpire)
 	StorePid("")
 }
 
@@ -56,6 +57,7 @@ func main() {
 	probe := util.NewProbe(wg,closeCh)
 	defer func() {
 		close(closeCh)
+		logfox.Close()
 		wg.Wait()
 	}()
 
@@ -65,7 +67,7 @@ func main() {
 		port, err := strconv.Atoi(v["port"])
 		conntype := v["conntype"]
 		if err != nil {
-			flog.Fatalf(err.Error())
+			logfox.Error(err.Error())
 			os.Exit(1)
 		}
 		var password string
@@ -97,6 +99,6 @@ func main() {
 	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
 	<-exitChan
 
-	flog.Infof("redisfox shutdown")
+	logfox.Info("redisfox shutdown")
 }
 

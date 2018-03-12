@@ -1,5 +1,5 @@
-hash: c5e8ee7107cd41f536cbdfa4c26e6e125779ab4fcee2d1b55e23b5eab2b4c1c1
-updated: 2018-03-05T02:14:57.958510942+08:00
+hash: 94cfbfc416e330d02fa535120abc5e5aa337867d3695560416c41daa8893a4ce
+updated: 2018-03-12T14:44:40.311354668+08:00
 imports:
 - name: github.com/garyburd/redigo
   version: a69d19351219b6dd56f274f96d85a7014a2ec34e
@@ -24,14 +24,16 @@ imports:
 - name: github.com/mattn/go-sqlite3
   version: 6c771bb9887719704b210e87e934f08be014bdb1
 - name: github.com/ugorji/go
-  version: 16f09ef744fd4227190f626f14cfdefb14362b3b
+  version: 02537d3a3e32ef636a53519265d211bd208ca488
   subpackages:
   - codec
+- name: github.com/zer0131/logfox
+  version: 6a4b3b6bc6c610c4a373c85130364b58971cc817
 - name: golang.org/x/net
-  version: 22ae77b79946ea320088417e4d50825671d82d57
+  version: ae89d30ce0c63142b652837da33d782e2b0a9b25
   repo: https://github.com/golang/net.git
 - name: golang.org/x/sys
-  version: dd2ff4accc098aceecb86b36eaa7829b2a17b1c9
+  version: 7dca6fe1f43775aa6d1334576870ff63f978f539
   repo: https://github.com/golang/sys.git
   subpackages:
   - unix

@@ -13,4 +13,5 @@ import:
   repo: https://github.com/golang/net.git
 - package: golang.org/x/sys
   repo: https://github.com/golang/sys.git
+- package: github.com/zer0131/logfox
 

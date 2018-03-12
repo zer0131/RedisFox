@@ -6,9 +6,9 @@ import (
 	"time"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
-	"redisfox/flog"
 	"redisfox/dataprovider"
 	"strings"
+	"github.com/zer0131/logfox"
 )
 
 type Monitor struct {
@@ -62,7 +62,7 @@ func RunMonitor(server,conntype,password string, port int, config *conf.Config, 
 	monitor.sqlDb = sd
 
 	go monitor.loop()
-	flog.Infof(monitor.ServerId+" monitor start")
+	logfox.Infof("%s monitor start", monitor.ServerId)
 
 	return monitor,nil
 }
@@ -73,7 +73,7 @@ LOOP:
 	for{
 		select {
 		case <- this.probe.Chan():
-			flog.Infof(this.ServerId+" monitor stop")
+			logfox.Infof("%s monitor stop", this.ServerId)
 			break LOOP
 		default:
 			this.saveRedisCommand()

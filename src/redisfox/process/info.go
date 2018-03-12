@@ -2,13 +2,13 @@ package process
 
 import (
 	"redisfox/util"
-	"redisfox/flog"
 	"strconv"
 	"redisfox/conf"
 	"time"
 	"github.com/garyburd/redigo/redis"
 	"strings"
 	"redisfox/dataprovider"
+	"github.com/zer0131/logfox"
 )
 
 type Info struct {
@@ -49,7 +49,7 @@ func RunInfo(server,conntype,password string, port int, config *conf.Config, pro
 	info.sqlDb = sd
 
 	go info.loop()
-	flog.Infof(info.ServerId+" info start")
+	logfox.Infof("%s info start", info.ServerId)
 
 	return info, nil
 
@@ -60,7 +60,7 @@ LOOP:
 	for {
 		select {
 		case <- this.probe.Chan():
-			flog.Infof(this.ServerId+" info stop")
+			logfox.Infof("%s info stop", this.ServerId)
 			break LOOP
 		default:
 			this.saveRedisInfo()

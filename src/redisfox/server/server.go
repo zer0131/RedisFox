@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"net/http"
-	"redisfox/flog"
 	"time"
 	"context"
+	"github.com/zer0131/logfox"
 )
 
 type Server struct {
@@ -52,14 +52,14 @@ func NewServer(config *conf.Config) *Server {
 	server.srv.Handler = router
 
 	go server.start()
-	flog.Infof("web server start")
+	logfox.Info("web server start")
 
 	return server
 }
 
 func (this *Server) start() {
 	if err := this.srv.ListenAndServe(); err != nil {
-		flog.Fatalf("listen " +this.srv.Addr+ " errmsg: "+err.Error())
+		logfox.Errorf("listen %s errmsg: %s", this.srv.Addr, err.Error())
 	}
 }
 
@@ -68,7 +68,7 @@ func (this *Server) Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	if err := this.srv.Shutdown(ctx); err != nil {
-		flog.Fatalf("web server shutdown errmsg: "+err.Error())
+		logfox.Errorf("web server shutdown errmsg: %s", err.Error())
 	}
-	flog.Infof("web server shutdown")
+	logfox.Info("web server shutdown")
 }

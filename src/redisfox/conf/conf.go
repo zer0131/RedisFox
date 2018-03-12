@@ -15,7 +15,8 @@ type Config struct {
 	Datapath string
 	Logpath  string
 	Logname  string
-	Loglevel int
+	Loglevel string
+	Logexpire int
 	Serverip string
 	Serverport int
 	Staticdir string
