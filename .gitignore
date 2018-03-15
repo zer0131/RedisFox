@@ -102,6 +102,9 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 
+# ctags file
+tags
+
 # go相关
 # Binaries for programs and plugins
 *.exe
