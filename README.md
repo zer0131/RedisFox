@@ -1,153 +1,152 @@
 # RedisFox
 
-## 简介
+## Introduction
 
-RedisFox是一款基于Golang开发的Redis可视化监控工具。
+[[Simplified Chinese]](./tool/zh.md)
+
+RedisFox is a visual monitoring tool for Redis based on Golang development
 
 ![redisfox](./tool/redisfox.png)
 
-## 最新版本下载
+## Latest Version Download
 
 File Name|Kind|OS|Size
 ------|------|------|------
 [redisfox1.0.2.darwin-amd64.tar.gz](http://7xkyq4.com1.z0.glb.clouddn.com/redisfox/redisfox1.0.2.darwin-amd64.tar.gz)|Archive|MacOS|6M
 [redisfox1.0.2.linux-amd64.tar.gz](http://7xkyq4.com1.z0.glb.clouddn.com/redisfox/redisfox1.0.2.linux-amd64.tar.gz)|Archive|Linux|6M
 
-## 编译安装及运行
+## Instructions
 
-假设你已经配置好Golang环境（作者用的是Go1.9.2环境）
+Suppose you have configured the Golang environment (the author uses the Go1.9.2 environment)
 
-1. 下载RedisFox
+1. Download RedisFox
 
 ```
 git clone https://github.com/zer0131/RedisFox.git
 ```
 
-2. 获取依赖包
+2. Dependency Package
 
-**项目使用glide管理依赖，首先你要在你的环境下安装glide**
+**The project uses glide to manage dependencies. First, you need to install glide in your environment**
 
 [https://glide.readthedocs.io/en/latest/](https://glide.readthedocs.io/en/latest/)
 
-glide.yaml配置在src/redisfox目录下
+Glide.yaml is configured under the src/redisfox directory
 
 
 ```
 sh pkg.sh
 ```
 
-4. 编译安装
+4. Compile and Install
 
 ```
 sh build.sh
 ```
 
-5. 运行
+5. Run
 
-在 **conf/redis-fox.yaml** 配置redis服务器，并开启redis，然后执行start.sh脚本
+Configure the redis server in **conf/redis-fox.yaml**, open redis, and then execute the start.sh script
 
 ```
 cd output
 sh start.sh
 ```
 
-6. 访问
+6. Visit
 
-打开浏览器访问 **http://127.0.0.1:8080** 即可查看redis的监控状态
+Open the browser to access **http://127.0.0.1:8080** and see the monitoring status of redis态
 
-7. 停止
+7. Stop
 
 ```
 sh stop.sh
 ```
 
-## 目录介绍
+## Directory Structure
 
 ```
-├─bin                    go编译后执行文件目录
-├─pkg                    go编译使用的包目录
-├─src                    源文件
-│  ├─redisfox            源代码
-├─conf                   配置文件目录
-│  ├─redis-fox.yaml      配置文件
-├─log                    日志目录
-├─data                   数据目录
-├─static                 静态资源目录
-├─tpl                    模板目录
-├─tool                   工具目录
-├─pkg.sh                 获取go依赖脚本
-└─build.sh               程序编译安装脚本
+├─bin                    Go compiled file directory
+├─pkg                    Package directory used for Go compilation
+├─src                    Source directory
+│  ├─redisfox            Source code
+├─conf                   Config directory
+│  ├─redis-fox.yaml      Config file
+├─log                    Log directory
+├─data                   Data directory
+├─static                 Resource directory
+├─tpl                    Template directory
+├─tool                   Tool directory
+├─pkg.sh                 Get the Go dependency script
+└─build.sh               Compile and install the script
 ```
 
-## 配置说明
+## Configuration Description
 
-配置基于yaml语法，不懂戳这里[http://www.ruanyifeng.com/blog/2016/07/yaml.html](http://www.ruanyifeng.com/blog/2016/07/yaml.html)
+Configuration based on yaml syntax, do not understand the stamp here[http://www.ruanyifeng.com/blog/2016/07/yaml.html](http://www.ruanyifeng.com/blog/2016/07/yaml.html)
 
 ```
-#!同级的字段缩进相同，且只能用空格缩进
-#!每个字段value值前相对“-”或者“：”必须有空格
+#!The same level of field indentation is the same, and can only be indented with space.
+#!The relative "-" or ":" must have spaces before each field value value
 
-#[redis服务相关配置]
+#[Redis service configuration]
 
-#redis服务器
+#redis server
 servers:
  - server: 127.0.0.1
    port: 6379
    conntype: tcp
-   password: 123456 #redis密码，根据自己的需求更改，无密码不用配置
+   password: 123456 #passport
 
-#获取redis信息间隔时间(秒)
+#Get redis information interval time (second)
 sleeptime: 30
 
-#redis连接池最大连接数
+#The maximum number of connections in the redis connection pool
 maxidle: 3
 
-#redis连接池最大活跃数,0表示无限制
+#The maximum number of active redis connection pools, 0 unrestricted
 maxactive: 3
 
-#redis连接池连接超时时间,0表示不超时
+#The redis connection pool connects the timeout time, and 0 indicates no timeout
 idletimeout: 0
 
-#存储数据类型
+#Storage data type
 datatype: sqlite
-#数据存储路径
+#Data storage path
 datapath: ./data/redisfox.db
 
-#日志相关
+#Log
 logpath: ./log/
 logname: redisfox.log
 loglevel: 4
 
-#web访问ip
+#Web
 serverip: 127.0.0.1
-#web访问端口
 serverport: 8080
-#web调试模式是否开启
 debugmode: 0
 
-#静态文件目录
+#Resource
 staticdir: ./static/
-#模板文件目录
 tpldir: ./tpl/
 ```
 
-## Nginx反向代理
+## Nginx
 
 ```
 server {
-    server_name 域名或IP;
-    listen 80; # 或者 443，如果你使用 HTTPS 的话
-    # ssl on; 是否启用加密连接
-    # 如果你使用 HTTPS，还需要填写 ssl_certificate 和 ssl_certificate_key
+    server_name wwww.xxxx.com;
+    listen 80; # or 443
+    # ssl on; Whether to enable encrypted connections
+    # If you use HTTPS, you also need to fill in ssl_certificate and ssl_certificate_key
 
-    location / { # 如果你希望通过子路径访问，此处修改为子路径，注意以 / 开头并以 / 结束
+    location / { # If you want to access the subpath, this is changed to a subpath, pay attention to / begin and end / end
         proxy_pass http://127.0.0.1:8080/;
     }
     access_log  /your-path/nginx/logs/redisfox.log;
 }
 ```
 
-## Glide配置
+## Glide
 
 ```
 package: redisfox
