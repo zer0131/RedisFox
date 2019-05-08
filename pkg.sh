@@ -5,5 +5,5 @@ if ! command -v glide >/dev/null 2>&1; then
   exit 1
 fi
 
-glide update
+glide update -v
 

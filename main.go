@@ -1,4 +1,4 @@
-package RedisFox
+package main
 
 import (
 	"RedisFox/conf"
