@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"time"
-	"redisfox/dataprovider"
+	"RedisFox/dataprovider"
 	"strconv"
 	"net/http"
 )

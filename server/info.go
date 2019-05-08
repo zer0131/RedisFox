@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"redisfox/dataprovider"
+	"RedisFox/dataprovider"
 	"net/http"
 	"strings"
 	"strconv"

@@ -1,7 +1,7 @@
 package dataprovider
 
 import (
-	"redisfox/conf"
+	"RedisFox/conf"
 )
 
 type DataProvider interface {

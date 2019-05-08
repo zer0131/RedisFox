@@ -1,4 +1,4 @@
-package: redisfox
+package: RedisFox
 import:
 - package: github.com/garyburd/redigo
   version: ^1.4.0

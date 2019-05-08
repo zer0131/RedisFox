@@ -2,7 +2,7 @@ package dataprovider
 
 import (
 	"testing"
-	"redisfox/conf"
+	"RedisFox/conf"
 	"flag"
 	"os"
 	"fmt"

@@ -1,16 +1,16 @@
 package RedisFox
 
 import (
-	"redisfox/conf"
+	"RedisFox/conf"
 	"os"
 	"flag"
 	"strconv"
 	"os/signal"
 	"syscall"
 	"sync"
-	"redisfox/util"
-	"redisfox/process"
-	"redisfox/server"
+	"RedisFox/util"
+	"RedisFox/process"
+	"RedisFox/server"
 	"github.com/zer0131/logfox"
 	"log"
 )
@@ -99,6 +99,6 @@ func main() {
 	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
 	<-exitChan
 
-	logfox.Info("redisfox shutdown")
+	logfox.Info("RedisFox shutdown")
 }
 

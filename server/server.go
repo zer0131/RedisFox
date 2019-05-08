@@ -1,7 +1,7 @@
 package server
 
 import (
-	"redisfox/conf"
+	"RedisFox/conf"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"net/http"

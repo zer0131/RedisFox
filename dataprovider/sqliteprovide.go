@@ -3,7 +3,7 @@ package dataprovider
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"redisfox/util"
+	"RedisFox/util"
 	"time"
 	"encoding/json"
 	"strconv"

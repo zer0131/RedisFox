@@ -1,12 +1,12 @@
 package process
 
 import (
-	"redisfox/util"
-	"redisfox/conf"
+	"RedisFox/util"
+	"RedisFox/conf"
 	"time"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
-	"redisfox/dataprovider"
+	"RedisFox/dataprovider"
 	"strings"
 	"github.com/zer0131/logfox"
 )
