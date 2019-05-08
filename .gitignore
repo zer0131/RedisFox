@@ -125,5 +125,6 @@ tags
 run_redisfox.pid
 output/
 vendor/
+src/
 glide.lock
 

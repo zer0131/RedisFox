@@ -52,12 +52,14 @@ func StorePid(path string) {
 }
 
 func main() {
+	//日志要最后再关闭
+	defer logfox.Close()
+
 	wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
 	probe := util.NewProbe(wg,closeCh)
 	defer func() {
 		close(closeCh)
-		logfox.Close()
 		wg.Wait()
 	}()
 

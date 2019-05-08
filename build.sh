@@ -16,19 +16,20 @@ cp tool/stop.sh output/
 
 cp -r conf dataprovider process server util glide.yaml main.go src/RedisFox
 
-cd src/RedisFox
-glide update -v || exit -1
-
 curr_dir=$(cd `dirname $0`; pwd)
 old_gopath=$GOPATH
 export GOPATH=$curr_dir
 
+cd src/RedisFox
 
+glide update -v || exit -1
 go build -o $curr_dir/output/bin/redisfox *go || exit -1
 
 export GOPATH=$old_gopath
 cd $curr_dir
 #rm -rf src
+
+chmod -R 755 output/
 
 echo "build complete!"
 
