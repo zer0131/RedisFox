@@ -1,4 +1,4 @@
-package main
+package RedisFox
 
 import (
 	"redisfox/conf"
@@ -20,7 +20,7 @@ var config *conf.Config
 
 //初始化
 func init() {
-	flag.StringVar(&cpath, "config", "./conf/redis-fox.yaml", "config path with yml format")
+	flag.StringVar(&cpath, "config", "./config/redis-fox.yaml", "config path with yml format")
 	flag.Parse()
 	if cpath == "" {
 		log.Fatalf("config path: %s error", cpath)
