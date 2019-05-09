@@ -94,6 +94,7 @@ func main() {
 		}
 	}
 
+	//ToDo(zer):缺少wg
 	serv := server.NewServer(config)
 	defer serv.Stop()
 
