@@ -124,4 +124,6 @@ tags
 # costom project
 run_redisfox.pid
 output/
+glide.lock
+vendor/
 
