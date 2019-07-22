@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (this *Server) memory(context *gin.Context)  {
+func (s *Server) memory(context *gin.Context)  {
 	serverId := context.Query("server")
 	fromDate := context.DefaultQuery("from", "")
 	toDate := context.DefaultQuery("to", "")
@@ -25,7 +25,7 @@ func (this *Server) memory(context *gin.Context)  {
 		end = toDate
 	}
 
-	sqlDb,_ := dataprovider.NewProvider(this.config)
+	sqlDb,_ := dataprovider.NewProvider(s.config)
 	defer sqlDb.Close()
 
 	memoryList,_ := sqlDb.GetMemoryInfo(serverId, start, end)

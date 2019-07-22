@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-func (this *Server) serverList(context *gin.Context)  {
+func (s *Server) serverList(context *gin.Context)  {
 	var ret []gin.H
-	for _,v := range this.config.Servers {
+	for _,v := range s.config.Servers {
 		ret = append(ret, gin.H{
 			"id":v["server"]+":"+v["port"],
 			"server":v["server"],

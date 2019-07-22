@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (this *Server) commands(context *gin.Context)  {
+func (s *Server) commands(context *gin.Context)  {
 	serverId := context.Query("server")
 	fromDate := context.DefaultQuery("from", "")
 	toDate := context.DefaultQuery("to", "")
@@ -44,7 +44,7 @@ func (this *Server) commands(context *gin.Context)  {
 		groupBy = "second"
 	}
 
-	sqlDb,_ := dataprovider.NewProvider(this.config)
+	sqlDb,_ := dataprovider.NewProvider(s.config)
 	defer sqlDb.Close()
 
 	commandStats,_ := sqlDb.GetCommandStats(serverId, start, end, groupBy)

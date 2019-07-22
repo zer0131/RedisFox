@@ -55,26 +55,26 @@ func RunInfo(server,conntype,password string, port int, config *conf.Config, pro
 
 }
 
-func (this *Info) loop()  {
+func (i *Info) loop()  {
 LOOP:
 	for {
 		select {
-		case <- this.probe.Chan():
-			logfox.Infof("%s info stop", this.ServerId)
+		case <- i.probe.Chan():
+			logfox.Infof("%s info stop", i.ServerId)
 			break LOOP
 		default:
-			this.saveRedisInfo()
-			time.Sleep(time.Second * this.sleepTime)
+			i.saveRedisInfo()
+			time.Sleep(time.Second * i.sleepTime)
 		}
 	}
-	this.saveRedisInfo()//最后执行一次info，用于退出在redis中阻塞的monitor
-	this.sqlDb.Close()
-	this.redisConn.Close()
-	this.probe.Done()
+	i.saveRedisInfo()//最后执行一次info，用于退出在redis中阻塞的monitor
+	i.sqlDb.Close()
+	i.redisConn.Close()
+	i.probe.Done()
 }
 
-func (this *Info) saveRedisInfo() error {
-	ret, err:= redis.String(this.redisConn.Do("info"))
+func (i *Info) saveRedisInfo() error {
+	ret, err:= redis.String(i.redisConn.Do("info"))
 	if util.CheckError(err) == false {
 		return err
 	}
@@ -88,7 +88,7 @@ func (this *Info) saveRedisInfo() error {
 	}
 	usedMemory,_ := strconv.Atoi(retMap["used_memory"])
 	usedMemoryPeak,_ := strconv.Atoi(retMap["used_memory_peak"])
-	this.sqlDb.SaveMemoryInfo(this.ServerId,usedMemory,usedMemoryPeak)
-	this.sqlDb.SaveInfoCommand(this.ServerId, retMap)
+	i.sqlDb.SaveMemoryInfo(i.ServerId,usedMemory,usedMemoryPeak)
+	i.sqlDb.SaveInfoCommand(i.ServerId, retMap)
 	return nil
 }
