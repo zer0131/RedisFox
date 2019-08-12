@@ -32,7 +32,11 @@ func init() {
 		os.Exit(1)
 	}
 	config = c
-	logfox.Init(config.Logpath, config.Logname, config.Loglevel, config.Logexpire)
+	err = logfox.Init(config.Logpath, config.Logname, config.Loglevel, config.Logexpire)
+	if err != nil {
+		log.Fatalf("logfox init error")
+		os.Exit(1)
+	}
 	StorePid("")
 }
 
@@ -47,8 +51,10 @@ func StorePid(path string) {
 	if err != nil {
 		os.Exit(1)
 	}
-	defer fout.Close()
-	fout.WriteString(strconv.Itoa(pid))
+	defer func() {
+		_ = fout.Close()
+	}()
+	_,_ = fout.WriteString(strconv.Itoa(pid))
 }
 
 func main() {
