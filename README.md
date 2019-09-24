@@ -66,17 +66,19 @@ sh stop.sh
 ## Directory Structure
 
 ```
-├─bin                    Go compiled file directory
-├─pkg                    Package directory used for Go compilation
-├─src                    Source directory
-│  ├─redisfox            Source code
-├─conf                   Config directory
+├─config                 Config directory
 │  ├─redis-fox.yaml      Config file
 ├─log                    Log directory
 ├─data                   Data directory
 ├─static                 Resource directory
 ├─tpl                    Template directory
 ├─tool                   Tool directory
+├─conf                   Source Code conf
+├─dataprovider           Source Code dataprovider
+├─process                Source Code process
+├─server                 Source Code server
+├─util                   Source Code util
+├─main.go                Source Code main file
 ├─pkg.sh                 Get the Go dependency script
 └─build.sh               Compile and install the script
 ```
@@ -149,7 +151,7 @@ server {
 ## Glide
 
 ```
-package: redisfox
+package: RedisFox
 import:
 - package: github.com/garyburd/redigo
   version: ^1.4.0

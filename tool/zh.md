@@ -64,17 +64,19 @@ sh stop.sh
 ## 目录介绍
 
 ```
-├─bin                    go编译后执行文件目录
-├─pkg                    go编译使用的包目录
-├─src                    源文件
-│  ├─redisfox            源代码
-├─conf                   配置文件目录
+├─config                 配置文件目录
 │  ├─redis-fox.yaml      配置文件
 ├─log                    日志目录
 ├─data                   数据目录
 ├─static                 静态资源目录
 ├─tpl                    模板目录
 ├─tool                   工具目录
+├─conf                   源码 conf
+├─dataprovider           源码 dataprovider
+├─process                源码 process
+├─server                 源码 server
+├─util                   源码 util
+├─main.go                源码 main 文件
 ├─pkg.sh                 获取go依赖脚本
 └─build.sh               程序编译安装脚本
 ```
@@ -150,7 +152,7 @@ server {
 ## Glide配置
 
 ```
-package: redisfox
+package: RedisFox
 import:
 - package: github.com/garyburd/redigo
   version: ^1.4.0

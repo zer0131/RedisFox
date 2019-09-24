@@ -3,11 +3,12 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"time"
-	"redisfox/dataprovider"
+	"RedisFox/dataprovider"
+	"strconv"
 	"net/http"
 )
 
-func (this *Server) memory(context *gin.Context)  {
+func (s *Server) topkeys(context *gin.Context)  {
 	serverId := context.Query("server")
 	fromDate := context.DefaultQuery("from", "")
 	toDate := context.DefaultQuery("to", "")
@@ -18,21 +19,22 @@ func (this *Server) memory(context *gin.Context)  {
 	layout := "2006-01-02 15:04:05"
 	if fromDate == "" || toDate == "" {
 		end = now.Format(layout)
-		endTmp,_ := time.ParseDuration("-60s")
+		endTmp,_ := time.ParseDuration("-120s")
 		start = now.Add(endTmp).Format(layout)
 	} else {
 		start = fromDate
 		end = toDate
 	}
 
-	sqlDb,_ := dataprovider.NewProvider(this.config)
+	sqlDb,_ := dataprovider.NewProvider(s.config)
 	defer sqlDb.Close()
 
-	memoryList,_ := sqlDb.GetMemoryInfo(serverId, start, end)
+	topKeyStats,_ := sqlDb.GetTopKeysStats(serverId, start, end)
 
-	var data [][]string
-	for _,v := range memoryList {
-		data = append(data, []string{v["datetime"].(string),v["peak"].(string),v["used"].(string)})
+	var data [][]interface{}
+	for _,v := range topKeyStats {
+		count,_ := strconv.Atoi(v["total"].(string))
+		data = append(data, []interface{}{v["keyname"].(string),count})
 	}
 
 	context.JSON(http.StatusOK, gin.H{

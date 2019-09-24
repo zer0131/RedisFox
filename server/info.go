@@ -2,16 +2,16 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"redisfox/dataprovider"
+	"RedisFox/dataprovider"
 	"net/http"
 	"strings"
 	"strconv"
 )
 
-func (this *Server) info(context *gin.Context)  {
+func (s *Server) info(context *gin.Context)  {
 	serverId := context.Query("server")
 
-	sqlDb, _ := dataprovider.NewProvider(this.config)
+	sqlDb, _ := dataprovider.NewProvider(s.config)
 	defer sqlDb.Close()
 
 	redisInfo, _ := sqlDb.GetInfo(serverId)
@@ -44,18 +44,18 @@ func (this *Server) info(context *gin.Context)  {
 	}
 
 	redisInfo["databases"] = dataBases
-	redisInfo["total_keys"] = this.shortenNumber(totalKeys)
+	redisInfo["total_keys"] = s.shortenNumber(totalKeys)
 
 	uptimeSeconds, _ := strconv.Atoi(redisInfo["uptime_in_seconds"].(string))
-	redisInfo["uptime"] = this.uptimeInSeconds(uptimeSeconds)
+	redisInfo["uptime"] = s.uptimeInSeconds(uptimeSeconds)
 
 	commandsProcessed, _ := strconv.Atoi(redisInfo["total_commands_processed"].(string))
-	redisInfo["total_commands_processed_human"] = this.shortenNumber(commandsProcessed)
+	redisInfo["total_commands_processed_human"] = s.shortenNumber(commandsProcessed)
 
 	context.JSON(http.StatusOK, redisInfo)
 }
 
-func (this *Server) shortenNumber(number int) string {
+func (s *Server) shortenNumber(number int) string {
 	var val string
 	if number < 1000 {
 		val = strconv.Itoa(number)
@@ -78,7 +78,7 @@ func (this *Server) shortenNumber(number int) string {
 	return val
 }
 
-func (this *Server) uptimeInSeconds(seconds int) string {
+func (s *Server) uptimeInSeconds(seconds int) string {
 	var val string
 	if seconds < 60 {
 		val = strconv.Itoa(seconds) + "sec"

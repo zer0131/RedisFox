@@ -3,12 +3,12 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"time"
-	"redisfox/dataprovider"
+	"RedisFox/dataprovider"
 	"net/http"
 	"strconv"
 )
 
-func (this *Server) topcommands(context *gin.Context)  {
+func (s *Server) topcommands(context *gin.Context)  {
 	serverId := context.Query("server")
 	fromDate := context.DefaultQuery("from", "")
 	toDate := context.DefaultQuery("to", "")
@@ -26,7 +26,7 @@ func (this *Server) topcommands(context *gin.Context)  {
 		end = toDate
 	}
 
-	sqlDb,_ := dataprovider.NewProvider(this.config)
+	sqlDb,_ := dataprovider.NewProvider(s.config)
 	defer sqlDb.Close()
 
 	topCommandStats,_ := sqlDb.GetTopCommandsStats(serverId, start, end)

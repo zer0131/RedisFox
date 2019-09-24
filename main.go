@@ -1,16 +1,16 @@
 package main
 
 import (
-	"redisfox/conf"
+	"RedisFox/conf"
 	"os"
 	"flag"
 	"strconv"
 	"os/signal"
 	"syscall"
 	"sync"
-	"redisfox/util"
-	"redisfox/process"
-	"redisfox/server"
+	"RedisFox/util"
+	"RedisFox/process"
+	"RedisFox/server"
 	"github.com/zer0131/logfox"
 	"log"
 )
@@ -20,7 +20,7 @@ var config *conf.Config
 
 //初始化
 func init() {
-	flag.StringVar(&cpath, "config", "./conf/redis-fox.yaml", "config path with yml format")
+	flag.StringVar(&cpath, "config", "./config/redis-fox.yaml", "config path with yml format")
 	flag.Parse()
 	if cpath == "" {
 		log.Fatalf("config path: %s error", cpath)
@@ -32,7 +32,11 @@ func init() {
 		os.Exit(1)
 	}
 	config = c
-	logfox.Init(config.Logpath, config.Logname, config.Loglevel, config.Logexpire)
+	err = logfox.Init(config.Logpath, config.Logname, config.Loglevel, config.Logexpire)
+	if err != nil {
+		log.Fatalf("logfox init error")
+		os.Exit(1)
+	}
 	StorePid("")
 }
 
@@ -47,17 +51,21 @@ func StorePid(path string) {
 	if err != nil {
 		os.Exit(1)
 	}
-	defer fout.Close()
-	fout.WriteString(strconv.Itoa(pid))
+	defer func() {
+		_ = fout.Close()
+	}()
+	_,_ = fout.WriteString(strconv.Itoa(pid))
 }
 
 func main() {
+	//日志要最后再关闭
+	defer logfox.Close()
+
 	wg := new(sync.WaitGroup)
 	closeCh := make(chan struct{})
 	probe := util.NewProbe(wg,closeCh)
 	defer func() {
 		close(closeCh)
-		logfox.Close()
 		wg.Wait()
 	}()
 
@@ -92,6 +100,7 @@ func main() {
 		}
 	}
 
+	//ToDo(zer):缺少wg
 	serv := server.NewServer(config)
 	defer serv.Stop()
 
@@ -99,6 +108,6 @@ func main() {
 	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)
 	<-exitChan
 
-	logfox.Info("redisfox shutdown")
+	logfox.Info("RedisFox shutdown")
 }
 

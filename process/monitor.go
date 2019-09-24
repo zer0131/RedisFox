@@ -1,12 +1,12 @@
 package process
 
 import (
-	"redisfox/util"
-	"redisfox/conf"
+	"RedisFox/util"
+	"RedisFox/conf"
 	"time"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
-	"redisfox/dataprovider"
+	"RedisFox/dataprovider"
 	"strings"
 	"github.com/zer0131/logfox"
 )
@@ -67,25 +67,25 @@ func RunMonitor(server,conntype,password string, port int, config *conf.Config, 
 	return monitor,nil
 }
 
-func (this *Monitor) loop()  {
+func (m *Monitor) loop()  {
 
 LOOP:
 	for{
 		select {
-		case <- this.probe.Chan():
-			logfox.Infof("%s monitor stop", this.ServerId)
+		case <- m.probe.Chan():
+			logfox.Infof("%s monitor stop", m.ServerId)
 			break LOOP
 		default:
-			this.saveRedisCommand()
+			m.saveRedisCommand()
 		}
 	}
-	this.sqlDb.Close()
-	this.redisConn.Close()
-	this.probe.Done()
+	m.sqlDb.Close()
+	m.redisConn.Close()
+	m.probe.Done()
 }
 
-func (this *Monitor) saveRedisCommand() error {
-	ret, err := redis.String(this.redisConn.Do("monitor"))
+func (m *Monitor) saveRedisCommand() error {
+	ret, err := redis.String(m.redisConn.Do("monitor"))
 	if util.CheckError(err) == false {
 		return err
 	}
@@ -110,7 +110,7 @@ func (this *Monitor) saveRedisCommand() error {
 			}
 		}
 		if command != "INFO" && command != "MONITOR" {
-			this.sqlDb.SaveMonitorCommand(this.ServerId, command, keyName, arguments, newArr[0])
+			m.sqlDb.SaveMonitorCommand(m.ServerId, command, keyName, arguments, newArr[0])
 		}
 	}
 	return nil

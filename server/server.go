@@ -1,7 +1,7 @@
 package server
 
 import (
-	"redisfox/conf"
+	"RedisFox/conf"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"net/http"
@@ -57,17 +57,17 @@ func NewServer(config *conf.Config) *Server {
 	return server
 }
 
-func (this *Server) start() {
-	if err := this.srv.ListenAndServe(); err != nil {
-		logfox.Errorf("listen %s errmsg: %s", this.srv.Addr, err.Error())
+func (s *Server) start() {
+	if err := s.srv.ListenAndServe(); err != nil {
+		logfox.Errorf("listen %s errmsg: %s", s.srv.Addr, err.Error())
 	}
 }
 
 //graceful stop需Go1.8+
-func (this *Server) Stop() {
+func (s *Server) Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	if err := this.srv.Shutdown(ctx); err != nil {
+	if err := s.srv.Shutdown(ctx); err != nil {
 		logfox.Errorf("web server shutdown errmsg: %s", err.Error())
 	}
 	logfox.Info("web server shutdown")

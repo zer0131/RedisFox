@@ -3,7 +3,7 @@ package dataprovider
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
-	"redisfox/util"
+	"RedisFox/util"
 	"time"
 	"encoding/json"
 	"strconv"
@@ -37,8 +37,8 @@ func NewSqliteProvide(dbPath string) (*SqliteProvide, error) {
 	return sqliteProvide,nil
 }
 
-func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
-	stmt, err := this.db.Prepare("INSERT INTO memory(used,peak,server,datetime) VALUES(?,?,?,?)")
+func (sp *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
+	stmt, err := sp.db.Prepare("INSERT INTO memory(used,peak,server,datetime) VALUES(?,?,?,?)")
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -54,13 +54,13 @@ func (this *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int
 	return id
 }
 
-func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string) int64 {
+func (sp *SqliteProvide) SaveInfoCommand(server string, info map[string]string) int64 {
 	datetime := time.Now().Format("2006-01-02 15:04:05")
 	jsonByte, err := json.Marshal(info)
 	if util.CheckError(err) == false {
 		return 0
 	}
-	stmt, err := this.db.Prepare("INSERT INTO info(server,info,datetime) VALUES(?,?,?)")
+	stmt, err := sp.db.Prepare("INSERT INTO info(server,info,datetime) VALUES(?,?,?)")
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -75,7 +75,7 @@ func (this *SqliteProvide) SaveInfoCommand(server string, info map[string]string
 	return id
 }
 
-func (this *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument, timestamp string) int64 {
+func (sp *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument, timestamp string) int64 {
 	var datetime string
 	if timestamp != "" {
 		timestampFloat, _ := strconv.ParseFloat(timestamp, 64)
@@ -83,7 +83,7 @@ func (this *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument,
 	} else {
 		datetime = time.Now().Format("2006-01-02 15:04:05")
 	}
-	stmt, err := this.db.Prepare("INSERT INTO monitor(server,command,arguments,keyname,datetime) VALUES(?,?,?,?,?)")
+	stmt, err := sp.db.Prepare("INSERT INTO monitor(server,command,arguments,keyname,datetime) VALUES(?,?,?,?,?)")
 	if util.CheckError(err) == false {
 		return 0
 	}
@@ -98,9 +98,9 @@ func (this *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument,
 	return id
 }
 
-func (this *SqliteProvide) GetInfo(serverId string) (map[string]interface{}, error) {
+func (sp *SqliteProvide) GetInfo(serverId string) (map[string]interface{}, error) {
 	var info string
-	err := this.db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", serverId).Scan(&info)
+	err := sp.db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", serverId).Scan(&info)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -112,9 +112,9 @@ func (this *SqliteProvide) GetInfo(serverId string) (map[string]interface{}, err
 	return jsonMap, nil
 }
 
-func (this *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
-	sql := "SELECT used,peak,datetime FROM memory WHERE server=? AND datetime>=? AND datetime<=?"
-	rows, err := this.db.Query(sql, serverId, fromDate, toDate)
+func (sp *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
+	sqlSel := "SELECT used,peak,datetime FROM memory WHERE server=? AND datetime>=? AND datetime<=?"
+	rows, err := sp.db.Query(sqlSel, serverId, fromDate, toDate)
 	if util.CheckError(err) == false {
 		return nil,err
 	}
@@ -134,8 +134,8 @@ func (this *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]m
 	return ret, nil
 }
 
-func (this *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy string) ([]map[string]interface{}, error) {
-	sql := "SELECT COUNT(*) AS total, strftime('%s', datetime) AS datetime FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY strftime('%s', datetime) ORDER BY datetime DESC"
+func (sp *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy string) ([]map[string]interface{}, error) {
+	sqlSel := "SELECT COUNT(*) AS total, strftime('%s', datetime) AS datetime FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY strftime('%s', datetime) ORDER BY datetime DESC"
 
 	var queryTimeFmt string
 	if groupBy == "day" {
@@ -148,9 +148,9 @@ func (this *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy s
 		queryTimeFmt = "%Y-%m-%d %H:%M:%S"
 	}
 
-	sql = fmt.Sprintf(sql, queryTimeFmt, queryTimeFmt)
+	sqlSelFormat := fmt.Sprintf(sqlSel, queryTimeFmt, queryTimeFmt)
 
-	rows, err := this.db.Query(sql, fromDate,toDate,serverId)
+	rows, err := sp.db.Query(sqlSelFormat, fromDate,toDate,serverId)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -171,10 +171,10 @@ func (this *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy s
 	return ret, nil
 }
 
-func (this *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error)  {
-	sql := "SELECT command, COUNT(*) AS total FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY command ORDER BY total ASC"
+func (sp *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error)  {
+	sqlSel := "SELECT command, COUNT(*) AS total FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY command ORDER BY total ASC"
 
-	rows, err := this.db.Query(sql, fromDate,toDate,serverId)
+	rows, err := sp.db.Query(sqlSel, fromDate,toDate,serverId)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -195,10 +195,10 @@ func (this *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string
 	return ret, nil
 }
 
-func (this *SqliteProvide) GetTopKeysStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
-	sql := "SELECT keyname, COUNT(*) AS total FROM monitor WHERE datetime >= ? AND datetime <= ? AND server = ? GROUP BY keyname ORDER BY total DESC LIMIT 10"
+func (sp *SqliteProvide) GetTopKeysStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
+	sqlSel := "SELECT keyname, COUNT(*) AS total FROM monitor WHERE datetime >= ? AND datetime <= ? AND server = ? GROUP BY keyname ORDER BY total DESC LIMIT 10"
 
-	rows, err := this.db.Query(sql, fromDate,toDate,serverId)
+	rows, err := sp.db.Query(sqlSel, fromDate,toDate,serverId)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -219,11 +219,11 @@ func (this *SqliteProvide) GetTopKeysStats(serverId, fromDate, toDate string) ([
 	return ret, nil
 }
 
-func (this *SqliteProvide) Close() error {
-	return this.db.Close()
+func (sp *SqliteProvide) Close() error {
+	return sp.db.Close()
 }
 
-func (this *SqliteProvide) createTable() error {
+func (sp *SqliteProvide) createTable() error {
 	sqlData := `
 	CREATE TABLE IF NOT EXISTS info(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -256,7 +256,7 @@ func (this *SqliteProvide) createTable() error {
 	CREATE INDEX monitor_datedime_index ON monitor (datetime DESC);
 	CREATE INDEX server_index ON monitor(server ASC);
 	`
-	_, err := this.db.Exec(sqlData)
+	_, err := sp.db.Exec(sqlData)
 	if util.CheckError(err) == false {
 		return err
 	}
