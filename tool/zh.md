@@ -16,7 +16,7 @@ File Name|Kind|OS|Size
 ## 编译安装及运行
 
 ### 特别说明：
-* Go版本需要**>v1.12**，并且使用Go Modlue做为包依赖管理(作者用的是Go1.12.9)
+* Go版本需要 **>v1.12**，并且使用Go Modlue做为包依赖管理(作者用的是Go1.12.9)
 * 使用gosuv驱动程序运行
 
 1. 下载RedisFox
@@ -33,7 +33,7 @@ sh build.sh
 
 3. 运行
 
-调整programs.yml中的**directory**
+调整programs.yml中的 **directory**
 在 **conf/redis-fox.yaml** 配置redis服务器，并开启redis，然后执行run.sh
 
 ```
