@@ -8,13 +8,13 @@ type Probe struct {
 }
 
 func NewProbe(wg *sync.WaitGroup, ch chan struct{}) *Probe {
-	return &Probe{wg: wg, ch:ch}
+	return &Probe{wg: wg, ch: ch}
 }
 
-func (this *Probe) Done()  {
-	this.wg.Done()
+func (p *Probe) Done() {
+	p.wg.Done()
 }
 
-func (this *Probe) Chan() <-chan struct{} {
-	return this.ch
+func (p *Probe) Chan() <-chan struct{} {
+	return p.ch
 }
