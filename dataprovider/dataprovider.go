@@ -2,6 +2,7 @@ package dataprovider
 
 import (
 	"RedisFox/conf"
+	"context"
 )
 
 type DataProvider interface {
@@ -16,10 +17,10 @@ type DataProvider interface {
 	GetTopKeysStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error)
 }
 
-func NewProvider(config *conf.Config) (DataProvider,error) {
-	if config.Datatype == "sqlite" {
-		return NewSqliteProvide(config.Datapath)
+func NewProvider(ctx context.Context) (DataProvider, error) {
+	if conf.ConfigVal.BaseVal.Datatype == "sqlite" {
+		return NewSqliteProvide(ctx)
 	} else {
-		return NewSqliteProvide(config.Datapath)//默认返回
+		return NewSqliteProvide(ctx) //默认返回
 	}
 }

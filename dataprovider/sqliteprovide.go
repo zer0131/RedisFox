@@ -1,40 +1,40 @@
 package dataprovider
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+	"RedisFox/conf"
 	"RedisFox/util"
-	"time"
+	"context"
+	"database/sql"
 	"encoding/json"
-	"strconv"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/zer0131/logfox"
+	"strconv"
+	"time"
 )
 
-
-type SqliteProvide struct{
-	dbPath string
+type SqliteProvide struct {
 	db *sql.DB
 }
 
-func NewSqliteProvide(dbPath string) (*SqliteProvide, error) {
+func NewSqliteProvide(ctx context.Context) (*SqliteProvide, error) {
 	runSql := true
-	if isExists, _ := util.PathExists(dbPath); isExists {
+	if isExists, _ := util.PathExists(conf.ConfigVal.BaseVal.Datapath); isExists {
 		runSql = false
 	}
-	db, err := sql.Open("sqlite3", dbPath)
-	if util.CheckError(err) == false {
-		return nil,err
+	db, err := sql.Open("sqlite3", conf.ConfigVal.BaseVal.Datapath)
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "sqlite open error:%+v", err)
+		return nil, err
 	}
 	sqliteProvide := new(SqliteProvide)
-	sqliteProvide.dbPath = dbPath
 	sqliteProvide.db = db
 	if runSql {
-		if cerr := sqliteProvide.createTable();cerr != nil {
-			return nil,cerr
+		if cerr := sqliteProvide.createTable(); cerr != nil {
+			return nil, cerr
 		}
 	}
-	return sqliteProvide,nil
+	return sqliteProvide, nil
 }
 
 func (sp *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
@@ -75,7 +75,7 @@ func (sp *SqliteProvide) SaveInfoCommand(server string, info map[string]string) 
 	return id
 }
 
-func (sp *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument, timestamp string) int64 {
+func (sp *SqliteProvide) SaveMonitorCommand(server, command, keyname, argument, timestamp string) int64 {
 	var datetime string
 	if timestamp != "" {
 		timestampFloat, _ := strconv.ParseFloat(timestamp, 64)
@@ -116,20 +116,20 @@ func (sp *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]map
 	sqlSel := "SELECT used,peak,datetime FROM memory WHERE server=? AND datetime>=? AND datetime<=?"
 	rows, err := sp.db.Query(sqlSel, serverId, fromDate, toDate)
 	if util.CheckError(err) == false {
-		return nil,err
+		return nil, err
 	}
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			used string
-			peak string
+			used     string
+			peak     string
 			datetime string
 		)
-		if err := rows.Scan(&used,&peak,&datetime);err != nil {
+		if err := rows.Scan(&used, &peak, &datetime); err != nil {
 			logfox.Error(err.Error())
 			continue
 		}
-		ret = append(ret,map[string]interface{}{"used":used,"peak":peak,"datetime":datetime})
+		ret = append(ret, map[string]interface{}{"used": used, "peak": peak, "datetime": datetime})
 	}
 	return ret, nil
 }
@@ -150,7 +150,7 @@ func (sp *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy str
 
 	sqlSelFormat := fmt.Sprintf(sqlSel, queryTimeFmt, queryTimeFmt)
 
-	rows, err := sp.db.Query(sqlSelFormat, fromDate,toDate,serverId)
+	rows, err := sp.db.Query(sqlSelFormat, fromDate, toDate, serverId)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -158,23 +158,23 @@ func (sp *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy str
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			total string
+			total    string
 			datetime string
 		)
-		err := rows.Scan(&total,&datetime)
+		err := rows.Scan(&total, &datetime)
 		if util.CheckError(err) == false {
 			continue
 		}
-		ret = append(ret, map[string]interface{}{"total":total,"datetime":datetime})
+		ret = append(ret, map[string]interface{}{"total": total, "datetime": datetime})
 	}
 
 	return ret, nil
 }
 
-func (sp *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error)  {
+func (sp *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
 	sqlSel := "SELECT command, COUNT(*) AS total FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY command ORDER BY total ASC"
 
-	rows, err := sp.db.Query(sqlSel, fromDate,toDate,serverId)
+	rows, err := sp.db.Query(sqlSel, fromDate, toDate, serverId)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -182,14 +182,14 @@ func (sp *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) 
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			total string
+			total   string
 			command string
 		)
-		err := rows.Scan(&command,&total)//一定要注意变量顺序
+		err := rows.Scan(&command, &total) //一定要注意变量顺序
 		if util.CheckError(err) == false {
 			continue
 		}
-		ret = append(ret, map[string]interface{}{"total":total,"command":command})
+		ret = append(ret, map[string]interface{}{"total": total, "command": command})
 	}
 
 	return ret, nil
@@ -198,7 +198,7 @@ func (sp *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) 
 func (sp *SqliteProvide) GetTopKeysStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
 	sqlSel := "SELECT keyname, COUNT(*) AS total FROM monitor WHERE datetime >= ? AND datetime <= ? AND server = ? GROUP BY keyname ORDER BY total DESC LIMIT 10"
 
-	rows, err := sp.db.Query(sqlSel, fromDate,toDate,serverId)
+	rows, err := sp.db.Query(sqlSel, fromDate, toDate, serverId)
 	if util.CheckError(err) == false {
 		return nil, err
 	}
@@ -206,14 +206,14 @@ func (sp *SqliteProvide) GetTopKeysStats(serverId, fromDate, toDate string) ([]m
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			total string
+			total   string
 			keyname string
 		)
-		err := rows.Scan(&keyname,&total)//一定要注意变量顺序
+		err := rows.Scan(&keyname, &total) //一定要注意变量顺序
 		if util.CheckError(err) == false {
 			continue
 		}
-		ret = append(ret, map[string]interface{}{"total":total,"keyname":keyname})
+		ret = append(ret, map[string]interface{}{"total": total, "keyname": keyname})
 	}
 
 	return ret, nil
@@ -257,7 +257,7 @@ func (sp *SqliteProvide) createTable() error {
 	CREATE INDEX server_index ON monitor(server ASC);
 	`
 	_, err := sp.db.Exec(sqlData)
-	if util.CheckError(err) == false {
+	if err != nil {
 		return err
 	}
 	return nil
