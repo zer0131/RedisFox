@@ -17,7 +17,7 @@ File Name|Kind|OS|Size
 
 ### 特别说明：
 * Go版本需要 **>v1.12**，并且使用Go Modlue做为包依赖管理(作者用的是Go1.12.9)
-* 使用gosuv驱动程序运行
+* 使用gosuv驱动程序运行，目前gosuv只支持linux运行
 
 1. 下载RedisFox
 

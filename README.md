@@ -19,7 +19,7 @@ File Name|Kind|OS|Size
 
 ### Special description 
 * Go version requires **>1.12**, and use go modlue as package dependency management(The author used Go1.12.9)
-* Run with gosuv driver 
+* Run with gosuv driver, currently gosuv only supports Linux 
 
 1. Download RedisFox
 
