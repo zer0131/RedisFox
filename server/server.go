@@ -2,42 +2,42 @@ package server
 
 import (
 	"RedisFox/conf"
-	"github.com/gin-gonic/gin"
-	"strconv"
-	"net/http"
-	"time"
 	"context"
+	"github.com/gin-gonic/gin"
 	"github.com/zer0131/logfox"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 type Server struct {
-	config *conf.Config
 	srv *http.Server
 }
 
-func NewServer(config *conf.Config) *Server {
+func NewServer(ctx context.Context) *Server {
 	server := new(Server)
-	server.config = config
 	server.srv = new(http.Server)
 
 	//关闭调试模式
-	if server.config.Debugmode == 0 {
+	if conf.ConfigVal.BaseVal.Debugmode == 0 {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	router := gin.Default()
 
 	//静态文件处理
-	router.Static("/static", server.config.Staticdir)
+	router.Static("/static", conf.ConfigVal.BaseVal.Staticdir)
 
 	//模板变量标识
 	router.Delims("{[{", "}]}")
 
 	//首页
-	router.LoadHTMLFiles(server.config.Tpldir+"index.html")
+	router.LoadHTMLFiles(conf.ConfigVal.BaseVal.Tpldir + "index.html")
 	router.GET("/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "index.html", gin.H{})
 	})
+
+	//ToDo:每一个请求需要有一个新的logid
 
 	//接口
 	router.GET("/api/servers", server.serverList)
@@ -48,11 +48,11 @@ func NewServer(config *conf.Config) *Server {
 	router.GET("/api/topkeys", server.topkeys)
 
 	//srv设置
-	server.srv.Addr = server.config.Serverip+":"+strconv.Itoa(server.config.Serverport)
+	server.srv.Addr = conf.ConfigVal.BaseVal.Serverip + ":" + strconv.Itoa(conf.ConfigVal.BaseVal.Serverport)
 	server.srv.Handler = router
 
 	go server.start()
-	logfox.Info("web server start")
+	logfox.InfoWithContext(ctx, "web server start")
 
 	return server
 }
