@@ -1,0 +1,13 @@
+
+- name: bscript
+  # 可以使用相对路径
+  command: bin/redisfox
+  environ: []
+  # 需要根据实际的目录进行调整
+  directory: /home/work/redisfox
+  # 启动gosuv的时候自动启动
+  start_auto: true
+  # 最大重启次数
+  start_retries: 3
+  # 只有root用户可以指定用其他用户启动进程, 一般留空即可
+  user:

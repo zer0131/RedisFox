@@ -17,7 +17,9 @@ File Name|Kind|OS|Size
 
 ## Instructions
 
-Suppose you have configured the Golang environment (the author uses the Go1.9.2 environment)
+### Special description 
+* Go version requires**>1.12**, and use go modlue as package dependency management(The author used Go1.12.9)
+* Run with gosuv driver 
 
 1. Download RedisFox
 
@@ -25,42 +27,30 @@ Suppose you have configured the Golang environment (the author uses the Go1.9.2 
 git clone https://github.com/zer0131/RedisFox.git
 ```
 
-2. Dependency Package
-
-**The project uses glide to manage dependencies. First, you need to install glide in your environment**
-
-[https://glide.readthedocs.io/en/latest/](https://glide.readthedocs.io/en/latest/)
-
-Glide.yaml is configured under the src/redisfox directory
-
-
-```
-sh pkg.sh
-```
-
-4. Compile and Install
+2. Compile and Install
 
 ```
 sh build.sh
 ```
 
-5. Run
+3. Run
 
-Configure the redis server in **conf/redis-fox.yaml**, open redis, and then execute the start.sh script
+Adjustment programs.yml **directory**
+Configure the redis server in **conf/redis-fox.yaml**, open redis, and then execute the run.sh script
 
 ```
 cd output
-sh start.sh
+sh run.sh start
 ```
 
-6. Visit
+4. Visit
 
 Open the browser to access **http://127.0.0.1:8080** and see the monitoring status of redis态
 
-7. Stop
+5. Stop
 
 ```
-sh stop.sh
+sh run.sh stop
 ```
 
 ## Directory Structure
@@ -79,7 +69,6 @@ sh stop.sh
 ├─server                 Source Code server
 ├─util                   Source Code util
 ├─main.go                Source Code main file
-├─pkg.sh                 Get the Go dependency script
 └─build.sh               Compile and install the script
 ```
 
@@ -147,25 +136,4 @@ server {
     access_log  /your-path/nginx/logs/redisfox.log;
 }
 ```
-
-## Glide
-
-```
-package: RedisFox
-import:
-- package: github.com/garyburd/redigo
-  version: ^1.4.0
-  subpackages:
-  - redis
-- package: github.com/gin-gonic/gin
-  version: ^1.2.0
-- package: github.com/go-yaml/yaml
-- package: github.com/mattn/go-sqlite3
-  version: ^1.6.0
-- package: golang.org/x/net
-  repo: https://github.com/golang/net.git
-- package: golang.org/x/sys
-  repo: https://github.com/golang/sys.git
-```
-
 
