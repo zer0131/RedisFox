@@ -54,21 +54,17 @@ func RunMonitor(ctx context.Context, server, conntype, password string, port int
 		return nil,err
 	}*/
 
-	sd, err := dataprovider.NewProvider(ctx)
-	if util.CheckError(err) == false {
-		monitor.redisConn.Close()
-		return nil, err
-	}
+	sd := dataprovider.NewProvider(ctx)
 
 	monitor.sqlDb = sd
 
-	go monitor.loop()
-	logfox.Infof("%s monitor start", monitor.ServerId)
+	go monitor.loop(ctx)
+	logfox.InfofWithContext(ctx, "%s monitor start", monitor.ServerId)
 
 	return monitor, nil
 }
 
-func (m *Monitor) loop() {
+func (m *Monitor) loop(ctx context.Context) {
 
 LOOP:
 	for {
@@ -77,21 +73,23 @@ LOOP:
 			logfox.Infof("%s monitor stop", m.ServerId)
 			break LOOP
 		default:
-			m.saveRedisCommand()
+			_ = m.saveRedisCommand(ctx)
 		}
 	}
-	m.sqlDb.Close()
-	m.redisConn.Close()
+	_ = m.redisConn.Close()
 	m.probe.Done()
 }
 
-func (m *Monitor) saveRedisCommand() error {
+func (m *Monitor) saveRedisCommand(ctx context.Context) error {
 	ret, err := redis.String(m.redisConn.Do("monitor"))
-	if util.CheckError(err) == false {
+	if err != nil {
 		return err
 	}
 	if ret != "" {
 		retArr := strings.Split(ret, " ")
+		if retArr == nil {
+			return nil
+		}
 		if len(retArr) == 1 {
 			return nil
 		}
@@ -111,7 +109,7 @@ func (m *Monitor) saveRedisCommand() error {
 			}
 		}
 		if command != "INFO" && command != "MONITOR" {
-			m.sqlDb.SaveMonitorCommand(m.ServerId, command, keyName, arguments, newArr[0])
+			_ = m.sqlDb.SaveMonitorCommand(ctx, m.ServerId, command, keyName, arguments, newArr[0])
 		}
 	}
 	return nil

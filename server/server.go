@@ -7,7 +7,6 @@ import (
 	"github.com/zer0131/logfox"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type Server struct {
@@ -51,24 +50,24 @@ func NewServer(ctx context.Context) *Server {
 	server.srv.Addr = conf.ConfigVal.BaseVal.Serverip + ":" + strconv.Itoa(conf.ConfigVal.BaseVal.Serverport)
 	server.srv.Handler = router
 
-	go server.start()
+	go server.start(ctx)
 	logfox.InfoWithContext(ctx, "web server start")
 
 	return server
 }
 
-func (s *Server) start() {
+func (s *Server) start(ctx context.Context) {
 	if err := s.srv.ListenAndServe(); err != nil {
-		logfox.Errorf("listen %s errmsg: %s", s.srv.Addr, err.Error())
+		logfox.ErrorfWithContext(ctx, "listen %s errmsg: %s", s.srv.Addr, err.Error())
 	}
 }
 
 //graceful stop需Go1.8+
-func (s *Server) Stop() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
+func (s *Server) Stop(ctx context.Context) {
+	//ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	//defer cancel()
 	if err := s.srv.Shutdown(ctx); err != nil {
-		logfox.Errorf("web server shutdown errmsg: %s", err.Error())
+		logfox.ErrorfWithContext(ctx, "web server shutdown errmsg: %s", err.Error())
 	}
-	logfox.Info("web server shutdown")
+	logfox.InfoWithContext(ctx, "web server shutdown")
 }

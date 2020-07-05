@@ -24,10 +24,18 @@ maxactive: 3
 #redis连接池连接超时时间,0表示不超时
 idletimeout: 0
 
-#存储数据类型
-datatype: sqlite
+#存储数据类型(只支持sqllite3)
+datatype: sqlite3
 #数据存储路径
 datapath: ./data/redisfox.db
+#最大连接数
+datamaxopenconn: 50
+#设置连接池中的最大闲置连接数
+datamaxidleconn: 50
+#设置连接的最大可复用时间(毫秒)
+datamaxconnlifetime: 500000
+#日志log mode
+datalogmode: 0
 
 #日志相关
 logpath: ./log/

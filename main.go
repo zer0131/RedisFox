@@ -27,6 +27,12 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
+	defer func() {
+		//如果数据库没有关闭则关闭
+		if conf.ConfigVal != nil && conf.ConfigVal.MysqlServiceOrm != nil {
+			_ = conf.ConfigVal.MysqlServiceOrm.Close()
+		}
+	}()
 
 	//上下文
 	ctx := logfox.NewContextWithLogID(context.Background())
@@ -81,7 +87,7 @@ func main() {
 
 	//ToDo:缺少wg
 	serv := server.NewServer(ctx)
-	defer serv.Stop()
+	defer serv.Stop(ctx)
 
 	exitChan := make(chan os.Signal)
 	signal.Notify(exitChan, os.Kill, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGSTOP, syscall.SIGTERM)

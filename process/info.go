@@ -41,23 +41,19 @@ func RunInfo(ctx context.Context, server, conntype, password string, port int, p
 		return nil, err
 	}
 
-	sd, err := dataprovider.NewProvider(ctx)
-	if util.CheckError(err) == false {
-		rc.Close()
-		return nil, err
-	}
+	sd := dataprovider.NewProvider(ctx)
 
 	info.redisConn = rc
 	info.sqlDb = sd
 
-	go info.loop()
-	logfox.Infof("%s info start", info.ServerId)
+	go info.loop(ctx)
+	logfox.InfofWithContext(ctx, "%s info start", info.ServerId)
 
 	return info, nil
 
 }
 
-func (i *Info) loop() {
+func (i *Info) loop(ctx context.Context) {
 LOOP:
 	for {
 		select {
@@ -65,19 +61,18 @@ LOOP:
 			logfox.Infof("%s info stop", i.ServerId)
 			break LOOP
 		default:
-			i.saveRedisInfo()
+			_ = i.saveRedisInfo(ctx)
 			time.Sleep(time.Second * i.sleepTime)
 		}
 	}
-	i.saveRedisInfo() //最后执行一次info，用于退出在redis中阻塞的monitor
-	i.sqlDb.Close()
-	i.redisConn.Close()
+	_ = i.saveRedisInfo(ctx) //最后执行一次info，用于退出在redis中阻塞的monitor
+	_ = i.redisConn.Close()
 	i.probe.Done()
 }
 
-func (i *Info) saveRedisInfo() error {
+func (i *Info) saveRedisInfo(ctx context.Context) error {
 	ret, err := redis.String(i.redisConn.Do("info"))
-	if util.CheckError(err) == false {
+	if err != nil {
 		return err
 	}
 	retArr := strings.Split(strings.TrimRight(ret, "\r\n"), "\r\n")
@@ -90,7 +85,7 @@ func (i *Info) saveRedisInfo() error {
 	}
 	usedMemory, _ := strconv.Atoi(retMap["used_memory"])
 	usedMemoryPeak, _ := strconv.Atoi(retMap["used_memory_peak"])
-	i.sqlDb.SaveMemoryInfo(i.ServerId, usedMemory, usedMemoryPeak)
-	i.sqlDb.SaveInfoCommand(i.ServerId, retMap)
+	_ = i.sqlDb.SaveMemoryInfo(ctx, i.ServerId, usedMemory, usedMemoryPeak)
+	_ = i.sqlDb.SaveInfoCommand(ctx, i.ServerId, retMap)
 	return nil
 }
