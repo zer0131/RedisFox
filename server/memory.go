@@ -1,13 +1,15 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
-	"time"
 	"RedisFox/dataprovider"
+	"RedisFox/util"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
-func (s *Server) memory(context *gin.Context)  {
+func (s *Server) memory(context *gin.Context) {
+	ctx := util.NewContextWithGinContext(context)
 	serverId := context.Query("server")
 	fromDate := context.DefaultQuery("from", "")
 	toDate := context.DefaultQuery("to", "")
@@ -18,25 +20,24 @@ func (s *Server) memory(context *gin.Context)  {
 	layout := "2006-01-02 15:04:05"
 	if fromDate == "" || toDate == "" {
 		end = now.Format(layout)
-		endTmp,_ := time.ParseDuration("-60s")
+		endTmp, _ := time.ParseDuration("-60s")
 		start = now.Add(endTmp).Format(layout)
 	} else {
 		start = fromDate
 		end = toDate
 	}
 
-	sqlDb,_ := dataprovider.NewProvider(s.config)
-	defer sqlDb.Close()
+	sqlDb := dataprovider.NewProvider()
 
-	memoryList,_ := sqlDb.GetMemoryInfo(serverId, start, end)
+	memoryList, _ := sqlDb.GetMemoryInfo(ctx, serverId, start, end)
 
 	var data [][]string
-	for _,v := range memoryList {
-		data = append(data, []string{v["datetime"].(string),v["peak"].(string),v["used"].(string)})
+	for _, v := range memoryList {
+		data = append(data, []string{v["datetime"].(string), v["peak"].(string), v["used"].(string)})
 	}
 
 	context.JSON(http.StatusOK, gin.H{
-		"data":data,
-		"timestamp":now.Format(layout),
+		"data":      data,
+		"timestamp": now.Format(layout),
 	})
 }
