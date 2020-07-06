@@ -2,7 +2,6 @@ package dataprovider
 
 import (
 	"RedisFox/conf"
-	"RedisFox/util"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -49,7 +48,7 @@ func (sp *SqliteProvide) SaveMonitorCommand(ctx context.Context, server, command
 	} else {
 		datetime = time.Now().Format("2006-01-02 15:04:05")
 	}
-	sqlStr := "insert into `monitor`(`server`,`command`,`arguments`,`keyname`,`datetime`) value(?,?,?,?,?)"
+	sqlStr := "insert into `monitor`(`server`,`command`,`arguments`,`keyname`,`datetime`) values(?,?,?,?,?)"
 	err := conf.ConfigVal.MysqlServiceOrm.Exec(sqlStr, server, command, argument, keyname, datetime).Error
 	if err != nil {
 		logfox.ErrorfWithContext(ctx, "SaveMonitorCommand insert error:%+v", err)
@@ -133,7 +132,7 @@ func (sp *SqliteProvide) GetCommandStats(ctx context.Context, serverId, fromDate
 			datetime string
 		)
 		err := rows.Scan(&total, &datetime)
-		if util.CheckError(err) == false {
+		if err != nil {
 			continue
 		}
 		ret = append(ret, map[string]interface{}{"total": total, "datetime": datetime})
@@ -161,7 +160,7 @@ func (sp *SqliteProvide) GetTopCommandsStats(ctx context.Context, serverId, from
 			command string
 		)
 		err := rows.Scan(&command, &total) //一定要注意变量顺序
-		if util.CheckError(err) == false {
+		if err != nil {
 			continue
 		}
 		ret = append(ret, map[string]interface{}{"total": total, "command": command})
@@ -189,7 +188,7 @@ func (sp *SqliteProvide) GetTopKeysStats(ctx context.Context, serverId, fromDate
 			keyname string
 		)
 		err := rows.Scan(&keyname, &total) //一定要注意变量顺序
-		if util.CheckError(err) == false {
+		if err != nil {
 			continue
 		}
 		ret = append(ret, map[string]interface{}{"total": total, "keyname": keyname})

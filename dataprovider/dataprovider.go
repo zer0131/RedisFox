@@ -15,6 +15,6 @@ type DataProvider interface {
 	GetTopKeysStats(ctx context.Context, serverId, fromDate, toDate string) ([]map[string]interface{}, error)
 }
 
-func NewProvider(ctx context.Context) DataProvider {
+func NewProvider() DataProvider {
 	return &SqliteProvide{}
 }
