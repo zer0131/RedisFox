@@ -1,8 +1,10 @@
 package util
 
 import (
-	"os"
+	"context"
+	"github.com/gin-gonic/gin"
 	"github.com/zer0131/logfox"
+	"os"
 )
 
 func PathExists(path string) (bool, error) {
@@ -16,10 +18,11 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
-func CheckError(err error) bool {
-	if err != nil {
-		logfox.Error(err.Error())
-		return false
+func NewContextWithGinContext(c *gin.Context) context.Context {
+	logid, ok := c.Get(logfox.LogIDKey)
+	if !ok {
+		logid = logfox.GenLogId()
 	}
-	return true
+	ctx := logfox.NewContextWithSpecifyLogID(c, logid.(string))
+	return ctx
 }
