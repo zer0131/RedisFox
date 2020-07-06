@@ -85,7 +85,6 @@ func main() {
 		}
 	}
 
-	//ToDo:缺少wg
 	serv := server.NewServer(ctx)
 	defer serv.Stop(ctx)
 
