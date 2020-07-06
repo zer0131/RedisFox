@@ -41,7 +41,7 @@ func RunInfo(ctx context.Context, server, conntype, password string, port int, p
 		return nil, err
 	}
 
-	sd := dataprovider.NewProvider(ctx)
+	sd := dataprovider.NewProvider()
 
 	info.redisConn = rc
 	info.sqlDb = sd

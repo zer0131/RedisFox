@@ -54,7 +54,7 @@ func RunMonitor(ctx context.Context, server, conntype, password string, port int
 		return nil,err
 	}*/
 
-	sd := dataprovider.NewProvider(ctx)
+	sd := dataprovider.NewProvider()
 
 	monitor.sqlDb = sd
 
