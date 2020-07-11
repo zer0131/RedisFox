@@ -8,13 +8,6 @@ RedisFox is a visual monitoring tool for Redis based on Golang development
 
 ![redisfox](./tool/redisfox.png)
 
-## Latest Version Download
-
-File Name|Kind|OS|Size
-------|------|------|------
-[redisfox1.0.2.darwin-amd64.tar.gz](http://resource.zhangenrui.cn/redisfox/redisfox1.0.2.darwin-amd64.tar.gz)|Archive|MacOS|6M
-[redisfox1.0.2.linux-amd64.tar.gz](http://resource.zhangenrui.cn/redisfox/redisfox1.0.2.linux-amd64.tar.gz)|Archive|Linux|6M
-
 ## Instructions
 
 ### Special description 
