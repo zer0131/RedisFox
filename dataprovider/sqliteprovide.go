@@ -1,81 +1,46 @@
 package dataprovider
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
-	"RedisFox/util"
-	"time"
+	"RedisFox/conf"
+	"context"
 	"encoding/json"
-	"strconv"
 	"fmt"
 	"github.com/zer0131/logfox"
+	"strconv"
+	"time"
 )
 
-
-type SqliteProvide struct{
-	dbPath string
-	db *sql.DB
+type SqliteProvide struct {
 }
 
-func NewSqliteProvide(dbPath string) (*SqliteProvide, error) {
-	runSql := true
-	if isExists, _ := util.PathExists(dbPath); isExists {
-		runSql = false
-	}
-	db, err := sql.Open("sqlite3", dbPath)
-	if util.CheckError(err) == false {
-		return nil,err
-	}
-	sqliteProvide := new(SqliteProvide)
-	sqliteProvide.dbPath = dbPath
-	sqliteProvide.db = db
-	if runSql {
-		if cerr := sqliteProvide.createTable();cerr != nil {
-			return nil,cerr
-		}
-	}
-	return sqliteProvide,nil
-}
-
-func (sp *SqliteProvide) SaveMemoryInfo(server string, used int, peak int) int64 {
-	stmt, err := sp.db.Prepare("INSERT INTO memory(used,peak,server,datetime) VALUES(?,?,?,?)")
-	if util.CheckError(err) == false {
-		return 0
-	}
+func (sp *SqliteProvide) SaveMemoryInfo(ctx context.Context, server string, used int, peak int) error {
 	datetime := time.Now().Format("2006-01-02 15:04:05")
-	ret, err := stmt.Exec(used, peak, server, datetime)
-	if util.CheckError(err) == false {
-		return 0
+	sqlStr := "insert into `memory`(`used`,`peak`,`server`,`datetime`) values(?,?,?,?)"
+	err := conf.ConfigVal.MysqlServiceOrm.Exec(sqlStr, used, peak, server, datetime).Error
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "SaveMemoryInfo insert error:%+v", err)
+		return err
 	}
-	id, err := ret.LastInsertId()
-	if util.CheckError(err) == false {
-		return 0
-	}
-	return id
+	return nil
 }
 
-func (sp *SqliteProvide) SaveInfoCommand(server string, info map[string]string) int64 {
+func (sp *SqliteProvide) SaveInfoCommand(ctx context.Context, server string, info map[string]string) error {
 	datetime := time.Now().Format("2006-01-02 15:04:05")
-	jsonByte, err := json.Marshal(info)
-	if util.CheckError(err) == false {
-		return 0
+	jsonInfo, err := json.Marshal(info)
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "SaveInfoCommand json error:%+v", err)
+		return err
 	}
-	stmt, err := sp.db.Prepare("INSERT INTO info(server,info,datetime) VALUES(?,?,?)")
-	if util.CheckError(err) == false {
-		return 0
+	sqlStr := "insert into `info`(`server`,`info`,`datetime`) values(?,?,?)"
+	err = conf.ConfigVal.MysqlServiceOrm.Exec(sqlStr, server, string(jsonInfo), datetime).Error
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "SaveInfoCommand insert error:%+v", err)
+		return err
 	}
-	ret, err := stmt.Exec(server, string(jsonByte), datetime)
-	if util.CheckError(err) == false {
-		return 0
-	}
-	id, err := ret.LastInsertId()
-	if util.CheckError(err) == false {
-		return 0
-	}
-	return id
+	return nil
 }
 
-func (sp *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument, timestamp string) int64 {
+func (sp *SqliteProvide) SaveMonitorCommand(ctx context.Context, server, command, keyname, argument, timestamp string) error {
 	var datetime string
 	if timestamp != "" {
 		timestampFloat, _ := strconv.ParseFloat(timestamp, 64)
@@ -83,58 +48,59 @@ func (sp *SqliteProvide) SaveMonitorCommand(server, command, keyname,argument, t
 	} else {
 		datetime = time.Now().Format("2006-01-02 15:04:05")
 	}
-	stmt, err := sp.db.Prepare("INSERT INTO monitor(server,command,arguments,keyname,datetime) VALUES(?,?,?,?,?)")
-	if util.CheckError(err) == false {
-		return 0
+	sqlStr := "insert into `monitor`(`server`,`command`,`arguments`,`keyname`,`datetime`) values(?,?,?,?,?)"
+	err := conf.ConfigVal.MysqlServiceOrm.Exec(sqlStr, server, command, argument, keyname, datetime).Error
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "SaveMonitorCommand insert error:%+v", err)
+		return err
 	}
-	ret, err := stmt.Exec(server, command, argument, keyname, datetime)
-	if util.CheckError(err) == false {
-		return 0
-	}
-	id, err := ret.LastInsertId()
-	if util.CheckError(err) == false {
-		return 0
-	}
-	return id
+
+	return nil
 }
 
-func (sp *SqliteProvide) GetInfo(serverId string) (map[string]interface{}, error) {
+func (sp *SqliteProvide) GetInfo(ctx context.Context, serverId string) (map[string]interface{}, error) {
 	var info string
-	err := sp.db.QueryRow("SELECT info FROM info WHERE server=? ORDER BY datetime DESC LIMIT 1", serverId).Scan(&info)
-	if util.CheckError(err) == false {
+	row := conf.ConfigVal.MysqlServiceOrm.Table("info").Where("server = ?", serverId).Select("info").Order("datetime desc").Row()
+	err := row.Scan(&info)
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "GetInfo error:%+v", err)
 		return nil, err
 	}
 	jsonMap := make(map[string]interface{})
-	jsonErr := json.Unmarshal([]byte(info), &jsonMap)
-	if util.CheckError(jsonErr) == false {
-		return nil, jsonErr
+	err = json.Unmarshal([]byte(info), &jsonMap)
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "GetInfo json error:%+v", err)
+		return nil, err
 	}
 	return jsonMap, nil
 }
 
-func (sp *SqliteProvide) GetMemoryInfo(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
-	sqlSel := "SELECT used,peak,datetime FROM memory WHERE server=? AND datetime>=? AND datetime<=?"
-	rows, err := sp.db.Query(sqlSel, serverId, fromDate, toDate)
-	if util.CheckError(err) == false {
-		return nil,err
+func (sp *SqliteProvide) GetMemoryInfo(ctx context.Context, serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
+	rows, err := conf.ConfigVal.MysqlServiceOrm.Table("memory").Where("server=? AND datetime>=? AND datetime<=?", serverId, fromDate, toDate).Select("used,peak,datetime").Rows()
+	defer func() {
+		_ = rows.Close()
+	}()
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "GetMemoryInfo error:%+v", err)
+		return nil, err
 	}
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			used string
-			peak string
+			used     string
+			peak     string
 			datetime string
 		)
-		if err := rows.Scan(&used,&peak,&datetime);err != nil {
+		if err := rows.Scan(&used, &peak, &datetime); err != nil {
 			logfox.Error(err.Error())
 			continue
 		}
-		ret = append(ret,map[string]interface{}{"used":used,"peak":peak,"datetime":datetime})
+		ret = append(ret, map[string]interface{}{"used": used, "peak": peak, "datetime": datetime})
 	}
 	return ret, nil
 }
 
-func (sp *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy string) ([]map[string]interface{}, error) {
+func (sp *SqliteProvide) GetCommandStats(ctx context.Context, serverId, fromDate, toDate, groupBy string) ([]map[string]interface{}, error) {
 	sqlSel := "SELECT COUNT(*) AS total, strftime('%s', datetime) AS datetime FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY strftime('%s', datetime) ORDER BY datetime DESC"
 
 	var queryTimeFmt string
@@ -150,115 +116,83 @@ func (sp *SqliteProvide) GetCommandStats(serverId, fromDate, toDate, groupBy str
 
 	sqlSelFormat := fmt.Sprintf(sqlSel, queryTimeFmt, queryTimeFmt)
 
-	rows, err := sp.db.Query(sqlSelFormat, fromDate,toDate,serverId)
-	if util.CheckError(err) == false {
+	rows, err := conf.ConfigVal.MysqlServiceOrm.Raw(sqlSelFormat, fromDate, toDate, serverId).Rows()
+	defer func() {
+		_ = rows.Close()
+	}()
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "GetCommandStats error:%+v", err)
 		return nil, err
 	}
 
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			total string
+			total    string
 			datetime string
 		)
-		err := rows.Scan(&total,&datetime)
-		if util.CheckError(err) == false {
+		err := rows.Scan(&total, &datetime)
+		if err != nil {
 			continue
 		}
-		ret = append(ret, map[string]interface{}{"total":total,"datetime":datetime})
+		ret = append(ret, map[string]interface{}{"total": total, "datetime": datetime})
 	}
 
 	return ret, nil
 }
 
-func (sp *SqliteProvide) GetTopCommandsStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error)  {
+func (sp *SqliteProvide) GetTopCommandsStats(ctx context.Context, serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
 	sqlSel := "SELECT command, COUNT(*) AS total FROM monitor WHERE datetime>=? AND datetime<=? AND server=? GROUP BY command ORDER BY total ASC"
 
-	rows, err := sp.db.Query(sqlSel, fromDate,toDate,serverId)
-	if util.CheckError(err) == false {
+	rows, err := conf.ConfigVal.MysqlServiceOrm.Raw(sqlSel, fromDate, toDate, serverId).Rows()
+	defer func() {
+		_ = rows.Close()
+	}()
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "GetTopCommandsStats error:%+v", err)
 		return nil, err
 	}
 
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			total string
+			total   string
 			command string
 		)
-		err := rows.Scan(&command,&total)//一定要注意变量顺序
-		if util.CheckError(err) == false {
+		err := rows.Scan(&command, &total) //一定要注意变量顺序
+		if err != nil {
 			continue
 		}
-		ret = append(ret, map[string]interface{}{"total":total,"command":command})
+		ret = append(ret, map[string]interface{}{"total": total, "command": command})
 	}
 
 	return ret, nil
 }
 
-func (sp *SqliteProvide) GetTopKeysStats(serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
+func (sp *SqliteProvide) GetTopKeysStats(ctx context.Context, serverId, fromDate, toDate string) ([]map[string]interface{}, error) {
 	sqlSel := "SELECT keyname, COUNT(*) AS total FROM monitor WHERE datetime >= ? AND datetime <= ? AND server = ? GROUP BY keyname ORDER BY total DESC LIMIT 10"
 
-	rows, err := sp.db.Query(sqlSel, fromDate,toDate,serverId)
-	if util.CheckError(err) == false {
+	rows, err := conf.ConfigVal.MysqlServiceOrm.Raw(sqlSel, fromDate, toDate, serverId).Rows()
+	defer func() {
+		_ = rows.Close()
+	}()
+	if err != nil {
+		logfox.ErrorfWithContext(ctx, "GetTopKeysStats error:%+v", err)
 		return nil, err
 	}
 
 	var ret []map[string]interface{}
 	for rows.Next() {
 		var (
-			total string
+			total   string
 			keyname string
 		)
-		err := rows.Scan(&keyname,&total)//一定要注意变量顺序
-		if util.CheckError(err) == false {
+		err := rows.Scan(&keyname, &total) //一定要注意变量顺序
+		if err != nil {
 			continue
 		}
-		ret = append(ret, map[string]interface{}{"total":total,"keyname":keyname})
+		ret = append(ret, map[string]interface{}{"total": total, "keyname": keyname})
 	}
 
 	return ret, nil
-}
-
-func (sp *SqliteProvide) Close() error {
-	return sp.db.Close()
-}
-
-func (sp *SqliteProvide) createTable() error {
-	sqlData := `
-	CREATE TABLE IF NOT EXISTS info(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		info TEXT NOT NULL,
-		server TEXT NOT NULL,
-		datetime TEXT NOT NULL
-	);
-	CREATE TABLE IF NOT EXISTS memory(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		used INTEGER NOT NULL,
-		peak INTEGER NOT NULL,
-		server TEXT NOT NULL,
-		datetime TEXT NOT NULL
-	);
-	CREATE TABLE IF NOT EXISTS monitor(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		command TEXT NOT NULL,
-		arguments TEXT NOT NULL,
-		keyname TEXT NOT NULL,
-		server TEXT NOT NULL,
-		datetime TEXT NOT NULL
-	);
-	CREATE TABLE IF NOT EXISTS keys(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		expire NUMBER NOT NULL,
-		persist NUMBER NOT NULL,
-		server TEXT NOT NULL,
-		datetime TEXT NOT NULL
-	);
-	CREATE INDEX monitor_datedime_index ON monitor (datetime DESC);
-	CREATE INDEX server_index ON monitor(server ASC);
-	`
-	_, err := sp.db.Exec(sqlData)
-	if util.CheckError(err) == false {
-		return err
-	}
-	return nil
 }

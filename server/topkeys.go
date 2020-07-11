@@ -1,14 +1,16 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
-	"time"
 	"RedisFox/dataprovider"
-	"strconv"
+	"RedisFox/util"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
+	"time"
 )
 
-func (s *Server) topkeys(context *gin.Context)  {
+func (s *Server) topkeys(context *gin.Context) {
+	ctx := util.NewContextWithGinContext(context)
 	serverId := context.Query("server")
 	fromDate := context.DefaultQuery("from", "")
 	toDate := context.DefaultQuery("to", "")
@@ -19,26 +21,25 @@ func (s *Server) topkeys(context *gin.Context)  {
 	layout := "2006-01-02 15:04:05"
 	if fromDate == "" || toDate == "" {
 		end = now.Format(layout)
-		endTmp,_ := time.ParseDuration("-120s")
+		endTmp, _ := time.ParseDuration("-120s")
 		start = now.Add(endTmp).Format(layout)
 	} else {
 		start = fromDate
 		end = toDate
 	}
 
-	sqlDb,_ := dataprovider.NewProvider(s.config)
-	defer sqlDb.Close()
+	sqlDb := dataprovider.NewProvider()
 
-	topKeyStats,_ := sqlDb.GetTopKeysStats(serverId, start, end)
+	topKeyStats, _ := sqlDb.GetTopKeysStats(ctx, serverId, start, end)
 
 	var data [][]interface{}
-	for _,v := range topKeyStats {
-		count,_ := strconv.Atoi(v["total"].(string))
-		data = append(data, []interface{}{v["keyname"].(string),count})
+	for _, v := range topKeyStats {
+		count, _ := strconv.Atoi(v["total"].(string))
+		data = append(data, []interface{}{v["keyname"].(string), count})
 	}
 
 	context.JSON(http.StatusOK, gin.H{
-		"data":data,
-		"timestamp":now.Format(layout),
+		"data":      data,
+		"timestamp": now.Format(layout),
 	})
 }

@@ -6,16 +6,11 @@ RedisFox是一款基于Golang开发的Redis可视化监控工具。
 
 ![redisfox](./redisfox.png)
 
-## 最新版本下载
-
-File Name|Kind|OS|Size
-------|------|------|------
-[redisfox1.0.2.darwin-amd64.tar.gz](http://7xkyq4.com1.z0.glb.clouddn.com/redisfox/redisfox1.0.2.darwin-amd64.tar.gz)|Archive|MacOS|6M
-[redisfox1.0.2.linux-amd64.tar.gz](http://7xkyq4.com1.z0.glb.clouddn.com/redisfox/redisfox1.0.2.linux-amd64.tar.gz)|Archive|Linux|6M
-
 ## 编译安装及运行
 
-假设你已经配置好Golang环境（作者用的是Go1.9.2环境）
+### 特别说明：
+* Go版本需要 **>v1.12**，并且使用Go Modlue做为包依赖管理(作者用的是Go1.12.9)
+* 使用gosuv驱动程序运行，目前gosuv只支持linux运行
 
 1. 下载RedisFox
 
@@ -23,42 +18,30 @@ File Name|Kind|OS|Size
 git clone https://github.com/zer0131/RedisFox.git
 ```
 
-2. 获取依赖包
-
-**项目使用glide管理依赖，首先你要在你的环境下安装glide**
-
-[https://glide.readthedocs.io/en/latest/](https://glide.readthedocs.io/en/latest/)
-
-glide.yaml配置在src/redisfox目录下
-
-
-```
-sh pkg.sh
-```
-
-4. 编译安装
+2. 编译安装
 
 ```
 sh build.sh
 ```
 
-5. 运行
+3. 运行
 
-在 **conf/redis-fox.yaml** 配置redis服务器，并开启redis，然后执行start.sh脚本
+调整programs.yml中的 **directory**
+在 **conf/redis-fox.yaml** 配置redis服务器，并开启redis，然后执行run.sh
 
 ```
 cd output
-sh start.sh
+sh start.sh start
 ```
 
-6. 访问
+4. 访问
 
 打开浏览器访问 **http://127.0.0.1:8080** 即可查看redis的监控状态
 
-7. 停止
+5. 停止
 
 ```
-sh stop.sh
+sh run.sh stop
 ```
 
 ## 目录介绍
@@ -77,7 +60,6 @@ sh stop.sh
 ├─server                 源码 server
 ├─util                   源码 util
 ├─main.go                源码 main 文件
-├─pkg.sh                 获取go依赖脚本
 └─build.sh               程序编译安装脚本
 ```
 
@@ -147,26 +129,6 @@ server {
     }
     access_log  /your-path/nginx/logs/redisfox.log;
 }
-```
-
-## Glide配置
-
-```
-package: RedisFox
-import:
-- package: github.com/garyburd/redigo
-  version: ^1.4.0
-  subpackages:
-  - redis
-- package: github.com/gin-gonic/gin
-  version: ^1.2.0
-- package: github.com/go-yaml/yaml
-- package: github.com/mattn/go-sqlite3
-  version: ^1.6.0
-- package: golang.org/x/net
-  repo: https://github.com/golang/net.git
-- package: golang.org/x/sys
-  repo: https://github.com/golang/sys.git
 ```
 
 

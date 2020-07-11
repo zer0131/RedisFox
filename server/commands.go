@@ -1,13 +1,15 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
-	"time"
 	"RedisFox/dataprovider"
+	"RedisFox/util"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
-func (s *Server) commands(context *gin.Context)  {
+func (s *Server) commands(context *gin.Context) {
+	ctx := util.NewContextWithGinContext(context)
 	serverId := context.Query("server")
 	fromDate := context.DefaultQuery("from", "")
 	toDate := context.DefaultQuery("to", "")
@@ -18,18 +20,18 @@ func (s *Server) commands(context *gin.Context)  {
 	layout := "2006-01-02 15:04:05"
 	if fromDate == "" || toDate == "" {
 		end = now.Format(layout)
-		endTmp,_ := time.ParseDuration("-120s")
+		endTmp, _ := time.ParseDuration("-120s")
 		start = now.Add(endTmp).Format(layout)
 	} else {
 		start = fromDate
 		end = toDate
 	}
-	startTime,_ := time.Parse(layout, start)
-	endTime,_ := time.Parse(layout, end)
-	difference := endTime.Unix()-startTime.Unix()
+	startTime, _ := time.Parse(layout, start)
+	endTime, _ := time.Parse(layout, end)
+	difference := endTime.Unix() - startTime.Unix()
 
-	minutes := difference/60
-	hours := minutes/60
+	minutes := difference / 60
+	hours := minutes / 60
 
 	//group by设置
 	var groupBy string
@@ -44,18 +46,17 @@ func (s *Server) commands(context *gin.Context)  {
 		groupBy = "second"
 	}
 
-	sqlDb,_ := dataprovider.NewProvider(s.config)
-	defer sqlDb.Close()
+	sqlDb := dataprovider.NewProvider()
 
-	commandStats,_ := sqlDb.GetCommandStats(serverId, start, end, groupBy)
+	commandStats, _ := sqlDb.GetCommandStats(ctx, serverId, start, end, groupBy)
 
 	var data [][]string
-	for _,v := range commandStats {
-		data = append(data, []string{v["datetime"].(string),v["total"].(string)})
+	for _, v := range commandStats {
+		data = append(data, []string{v["datetime"].(string), v["total"].(string)})
 	}
 
 	context.JSON(http.StatusOK, gin.H{
-		"data":data,
-		"timestamp":now.Format(layout),
+		"data":      data,
+		"timestamp": now.Format(layout),
 	})
 }

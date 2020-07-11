@@ -1,0 +1,25 @@
+
+server:
+  httpserver:
+    enabled: false
+    addr: :8801
+  unixserver:
+    enabled: true
+    sockfile: .gosuv.sock
+  auth:
+    enabled: true
+    username: admin
+    password: admin
+    ipfile: ""
+  pidfile: .gosuv.pid
+  log:
+    logpath: gosuvlogs
+    level: info
+    filemax: 10000
+    backups: 10
+  minfds: 1024
+  minprocs: 1024
+client:
+  server_url: unix://.gosuv.sock
+  username: admin
+  password: admin
